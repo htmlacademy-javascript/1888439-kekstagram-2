@@ -1,3 +1,9 @@
+/**
+ * Checks that the string is shorter than or equal to the specified length
+ * @param {string} str - String to be checked
+ * @param {number} maxLen - Maximum string length
+ * @returns {boolean}
+ */
 export function isNotLonger(str, maxLen) {
   const segmenter = new Intl.Segmenter();
 
@@ -10,6 +16,11 @@ export function isNotLonger(str, maxLen) {
   return strLen <= maxLen;
 }
 
+/**
+ * Checks that the string is palindrome
+ * @param {string} str - String to be checked
+ * @returns {boolean}
+ */
 export function isPalindrome(str) {
   const isPunctuation = /\p{P}|\p{Z}/u;
 
@@ -34,6 +45,11 @@ export function isPalindrome(str) {
   return true;
 }
 
+/**
+ * Collects a number from the digits found in an argument
+ * @param {string | number} strOrNum - Arbitrary text or number
+ * @returns {number}
+ */
 export function collectNumber(strOrNum) {
   const DIGITS = {
     0: 0,
