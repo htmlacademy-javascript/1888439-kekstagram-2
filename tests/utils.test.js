@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
-import { getRandomInt } from '../js/random';
+import { cycleNum, getRandomInt } from '../js/utils';
 
 describe('should getRandomInt function return random integer in specified semi-interval [a, b)', () => {
   beforeEach(() => {
@@ -28,5 +28,31 @@ describe('should getRandomInt function return random integer in specified semi-i
     expect(getRandomInt(-10)).toBe(-5);
     expect(getRandomInt(-10.5)).toBe(-5);
     expect(getRandomInt(0.5, 10.5)).toBe(5);
+  });
+});
+
+describe('should cycleNum function return numeric value in range [1, limit]', () => {
+  let randomNum = 0;
+
+  beforeEach(() => {
+    randomNum = getRandomInt(5, 15);
+  });
+
+  test('when values that are already in the range are passed', () => {
+    expect(cycleNum(randomNum, randomNum + 1)).toBe(randomNum);
+    expect(cycleNum(1, randomNum)).toBe(1);
+    expect(cycleNum(randomNum, randomNum)).toBe(randomNum);
+  });
+
+  test('when values that are outside the range are passed', () => {
+    expect(cycleNum(randomNum + 1, randomNum)).toBe(1);
+    expect(cycleNum(-randomNum, randomNum)).toBe(1);
+    expect(cycleNum(0, randomNum)).toBe(1);
+  });
+
+  test('when are the boundary cases', () => {
+    expect(cycleNum(1, 0)).toBe(1);
+    expect(cycleNum(randomNum, 0)).toBe(1);
+    expect(cycleNum(randomNum, -randomNum)).toBe(1);
   });
 });

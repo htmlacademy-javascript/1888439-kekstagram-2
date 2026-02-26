@@ -14,10 +14,10 @@ import {
   generateFakePosts,
   getFakeAvatarPath,
   getFakePhotoPath
-} from '../js/main';
-import { getRandomInt } from '../js/random';
+} from '../js/fake-data';
+import { getRandomInt } from '../js/utils';
 
-vi.mock('../js/random.js', async (importOriginal) => {
+vi.mock('../js/utils.js', async (importOriginal) => {
   const originalModule = await importOriginal();
   return {
     ...originalModule,

@@ -18,3 +18,11 @@ export const getRandomInt = (fromOrTo, to) => {
 
   return Math.trunc(Math.random() * (to - fromOrTo)) + fromOrTo;
 };
+
+/**
+ * Cycle number in range [1, limit]
+ * @param {number} num - Limited id
+ * @param {number} limit - Max limit
+ * @returns {number}
+ */
+export const cycleNum = (num, limit) => ((Math.max(1, num) - 1) % Math.max(1, limit)) + 1;
