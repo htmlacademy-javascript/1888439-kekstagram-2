@@ -65,3 +65,33 @@ export const collectNumber = (strOrNum) => {
 
   return parseInt(collectedDigits.join(''), 10);
 };
+
+
+/**
+ * Parses the time in the hh:mm format and returns the minutes
+ * @param {string} timeStr - Time in the hh:mm format
+ * @return {number}
+ */
+export const parseTime = (timeStr) => {
+  const [hours, minutes] = timeStr.split(':', 2).map((component) => parseInt(component, 10));
+  return hours * 60 + minutes;
+};
+
+/**
+ * Checks that the meeting is within the specified range [workdayStart, workdayEnd]
+ * @param {string} workdayStart - Start time of the working day in the format hh:mm
+ * @param {string} workdayEnd - End time of the working day in the format hh:mm
+ * @param {string} meetingBegin - Start time of the meeting in the format hh:mm
+ * @param {number} meetingDuration - Meeting duration
+ * @returns {boolean}
+ */
+export const isMeetingOnTime = (workdayStart, workdayEnd, meetingBegin, meetingDuration) => {
+  const workdayStartMins = parseTime(workdayStart);
+  const meetingBeginMins = parseTime(meetingBegin);
+  if (workdayStartMins > meetingBeginMins) {
+    return false;
+  }
+
+  const workdayEndMins = parseTime(workdayEnd);
+  return meetingBeginMins + meetingDuration <= workdayEndMins;
+};
