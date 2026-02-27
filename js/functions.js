@@ -6,8 +6,8 @@
  */
 export const isNotLonger = (str, maxLen) => {
   const segmenter = new Intl.Segmenter();
-
   const segmenterIter = segmenter.segment(str)[Symbol.iterator]();
+
   let strLen = 0;
   while (!segmenterIter.next().done) {
     strLen += 1;
@@ -23,8 +23,8 @@ export const isNotLonger = (str, maxLen) => {
  */
 export const isPalindrome = (str) => {
   const isPunctuation = /\p{P}|\p{Z}/u;
-
   const segmenter = new Intl.Segmenter();
+
   /** @type {string[]} */
   const chars = [];
   for (const { segment } of segmenter.segment(str)) {
@@ -52,32 +52,16 @@ export const isPalindrome = (str) => {
  * @returns {number}
  */
 export const collectNumber = (strOrNum) => {
-  const DIGITS = {
-    0: 0,
-    1: 1,
-    2: 2,
-    3: 3,
-    4: 4,
-    5: 5,
-    6: 6,
-    7: 7,
-    8: 8,
-    9: 9,
-  };
-
+  const isDigit = /\d/;
   const str = strOrNum.toString();
 
-  /** @type {number[]} */
+  /** @type {string[]} */
   const collectedDigits = [];
   for (const char of str) {
-    if (char in DIGITS) {
-      collectedDigits.push(DIGITS[char]);
+    if (isDigit.test(char)) {
+      collectedDigits.push(char);
     }
   }
 
-  if (collectedDigits.length === 0) {
-    return NaN;
-  }
-
-  return collectedDigits.reduce((num, digit) => num * 10 + digit);
+  return parseInt(collectedDigits.join(''), 10);
 };
