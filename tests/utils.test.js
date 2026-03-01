@@ -22,11 +22,14 @@ describe('should getRandomInt function return random integer in specified semi-i
     expect(getRandomInt(-10, 10)).toBe(0);
   });
 
+  test('when arguments are out of range', () => {
+    expect(() => getRandomInt(10, -10)).toThrowError(RangeError);
+    expect(() => getRandomInt(-10)).toThrowError(RangeError);
+    expect(() => getRandomInt(-10.5)).toThrowError(RangeError);
+  });
+
   test('when are the boundary cases', () => {
     expect(getRandomInt(0, 0)).toBe(0);
-    expect(getRandomInt(10, -10)).toBe(0);
-    expect(getRandomInt(-10)).toBe(-5);
-    expect(getRandomInt(-10.5)).toBe(-5);
     expect(getRandomInt(0.5, 10.5)).toBe(5);
   });
 });
@@ -45,14 +48,11 @@ describe('should cycleNum function return numeric value in range [1, limit]', ()
   });
 
   test('when values that are outside the range are passed', () => {
-    expect(cycleNum(randomNum + 1, randomNum)).toBe(1);
-    expect(cycleNum(-randomNum, randomNum)).toBe(1);
-    expect(cycleNum(0, randomNum)).toBe(1);
-  });
-
-  test('when are the boundary cases', () => {
-    expect(cycleNum(1, 0)).toBe(1);
-    expect(cycleNum(randomNum, 0)).toBe(1);
-    expect(cycleNum(randomNum, -randomNum)).toBe(1);
+    expect(() => cycleNum(randomNum + 1, randomNum)).toThrowError(RangeError);
+    expect(() => cycleNum(-randomNum, randomNum)).toThrowError(RangeError);
+    expect(() => cycleNum(0, randomNum)).toThrowError(RangeError);
+    expect(() => cycleNum(1, 0)).toThrowError(RangeError);
+    expect(() => cycleNum(randomNum, 0)).toThrowError(RangeError);
+    expect(() => cycleNum(randomNum, -randomNum)).toThrowError(RangeError);
   });
 });
