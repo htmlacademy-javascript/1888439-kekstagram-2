@@ -4,6 +4,7 @@
  * @param {number} fromOrTo
  * @param {number} [to]
  * @returns {number}
+ *
  * @throws {RangeError} If 'to' is less than 'from'
  */
 export const getRandomInt = (fromOrTo, to) => {
@@ -24,22 +25,12 @@ export const getRandomInt = (fromOrTo, to) => {
 };
 
 /**
- * Cycle number in range [1, limit]
+ * Keep number in range [1, limit]
  *
- * @param {number} num - Limited id
+ * @param {number} num - Limited number
  * @param {number} limit - Max limit
  * @returns {number}
- * @throws {RangeError} If 'num' is less than 1
- * @throws {RangeError} If 'limit' is less than 'num'
  */
-export const cycleNum = (num, limit) => {
-  if (num < 1) {
-    throw new RangeError('The argument \'num\' must be greater than or equal to 1!');
-  }
-
-  if (num > limit) {
-    throw new RangeError('The argument \'limit\' must be greater than or equal to the argument \'num\'!');
-  }
-
-  return (num - 1) % limit + 1;
-};
+export const keepNumberInRange = (num, limit) => (
+  ((num - 1) % limit + limit) % limit + 1
+);

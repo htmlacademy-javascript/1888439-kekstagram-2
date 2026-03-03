@@ -1,6 +1,5 @@
 import { afterEach, describe, expect, test, vi } from 'vitest';
 import {
-  FAKE_AVATARS_COUNT,
   FAKE_PHOTO_COMMENTS,
   FAKE_PHOTOS_COUNT,
   FAKE_USER_MESSAGES,
@@ -64,22 +63,12 @@ describe('should getFakeAvatarPath function return path to the avatar image', ()
     const id = 1;
     expect(getFakeAvatarPath(id)).toBe(`img/avatar-${id}.svg`);
   });
-
-  test('when it get invalid id', () => {
-    expect(() => getFakeAvatarPath(FAKE_AVATARS_COUNT + 1)).toThrowError(RangeError);
-    expect(() => getFakeAvatarPath(-1)).toThrowError(RangeError);
-  });
 });
 
 describe('should getFakePhotoPath function return path to the photo image', () => {
   test('when it get valid id', () => {
     const id = 1;
     expect(getFakePhotoPath(id)).toBe(`photos/${id}.jpg`);
-  });
-
-  test('when it get invalid id', () => {
-    expect(() => getFakePhotoPath(FAKE_PHOTOS_COUNT + 1)).toThrowError(RangeError);
-    expect(() => getFakePhotoPath(-1)).toThrowError(RangeError);
   });
 });
 

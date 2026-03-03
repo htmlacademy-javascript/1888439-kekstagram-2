@@ -10,7 +10,7 @@ import {
   MIN_FAKE_COMMENT_ID,
   MIN_FAKE_PHOTO_ID
 } from './constants';
-import { cycleNum, getRandomInt } from './utils';
+import { getRandomInt, keepNumberInRange } from './utils';
 
 /**
  * @typedef {Object} Comment
@@ -36,7 +36,7 @@ import { cycleNum, getRandomInt } from './utils';
  * @returns {string}
  */
 export const getFakePhotoPath = (photoId) => {
-  const limitedPhotoId = cycleNum(photoId, FAKE_PHOTOS_COUNT);
+  const limitedPhotoId = keepNumberInRange(photoId, FAKE_PHOTOS_COUNT);
   return `photos/${limitedPhotoId}.jpg`;
 };
 
@@ -47,7 +47,7 @@ export const getFakePhotoPath = (photoId) => {
  * @returns {string}
  */
 export const getFakeAvatarPath = (avatarId) => {
-  const restrictiveAvatarId = cycleNum(avatarId, FAKE_AVATARS_COUNT);
+  const restrictiveAvatarId = keepNumberInRange(avatarId, FAKE_AVATARS_COUNT);
   return `img/avatar-${restrictiveAvatarId}.svg`;
 };
 
