@@ -31,6 +31,7 @@ import { cycleNum, getRandomInt } from './utils';
 
 /**
  * Generate fake photo path by id
+ *
  * @param {number} photoId - Fake photo id
  * @returns {string}
  */
@@ -41,6 +42,7 @@ export const getFakePhotoPath = (photoId) => {
 
 /**
  * Generate fake avatar path by id
+ *
  * @param {number} avatarId - Fake avatar id
  * @returns {string}
  */
@@ -51,6 +53,7 @@ export const getFakeAvatarPath = (avatarId) => {
 
 /**
  * Generates fake user comment message
+ *
  * @returns {string}
  */
 export const generateFakeMessage = () => {
@@ -69,6 +72,7 @@ export const generateFakeMessage = () => {
 
 /**
  * Generates fake comment by id
+ *
  * @param {number} id
  * @returns {Comment}
  */
@@ -81,6 +85,7 @@ export const generateFakeComment = (id) => ({
 
 /**
  * Generate fake post by id
+ *
  * @param {number} id
  * @return {Post}
  */
@@ -101,6 +106,7 @@ export const generateFakePost = (id) => {
 
 /**
  * Generate specified count of fake posts
+ *
  * @param {number} count - Count of fake posts
  * @return {Post[]}
  */
