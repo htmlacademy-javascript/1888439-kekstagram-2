@@ -51,4 +51,8 @@ describe('should keepNumberInRange function have the deterministic algorithm', (
   test('when the number is less than 1', () => {
     expect(keepNumberInRange(0, randomNum)).toBe(randomNum);
   });
+
+  test('when the limit less than 1', () => {
+    expect(() => keepNumberInRange(randomNum, 0)).toThrowError(RangeError);
+  });
 });

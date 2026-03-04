@@ -30,7 +30,13 @@ export const getRandomInt = (fromOrTo, to) => {
  * @param {number} num - Limited number
  * @param {number} limit - Max limit
  * @returns {number}
+ *
+ * @throws {RangeError} If the limit is less than 1
  */
-export const keepNumberInRange = (num, limit) => (
-  ((num - 1) % limit + limit) % limit + 1
-);
+export const keepNumberInRange = (num, limit) => {
+  if (limit < 1) {
+    throw new RangeError('The \'limit\' must be greater than or equal 1!');
+  }
+
+  return ((num - 1) % limit + limit) % limit + 1;
+};
