@@ -1,3 +1,5 @@
+import { parseTime } from './utils';
+
 /**
  * Checks that the string is shorter than or equal to the specified length
  *
@@ -67,18 +69,6 @@ export const collectNumber = (strOrNum) => {
   }
 
   return parseInt(collectedDigits.join(''), 10);
-};
-
-
-/**
- * Parses the time in the hh:mm format and returns the minutes
- *
- * @param {string} timeStr - Time in the hh:mm format
- * @return {number}
- */
-export const parseTime = (timeStr) => {
-  const [hours, minutes] = timeStr.split(':', 2).map((component) => parseInt(component, 10));
-  return hours * 60 + minutes;
 };
 
 /**

@@ -40,3 +40,14 @@ export const keepNumberInRange = (num, limit) => {
 
   return ((num - 1) % limit + limit) % limit + 1;
 };
+
+/**
+ * Parses the time in the hh:mm format and returns the minutes
+ *
+ * @param {string} timeStr - Time in the hh:mm format
+ * @return {number}
+ */
+export const parseTime = (timeStr) => {
+  const [hours, minutes] = timeStr.split(':', 2).map((component) => parseInt(component, 10));
+  return hours * 60 + minutes;
+};

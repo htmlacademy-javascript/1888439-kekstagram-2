@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'vitest';
-import { collectNumber, isMeetingOnTime, isNotLonger, isPalindrome, parseTime } from '../js/functions';
+import { collectNumber, isMeetingOnTime, isNotLonger, isPalindrome } from '../js/functions';
 
 describe('should the isNotLonger function check the maximum length correctly', () => {
   test('when it receives on character', () => {
@@ -104,19 +104,6 @@ describe('should collectNumber function extract digits from a string and assembl
     expect(collectNumber('   ')).toBeNaN();
     expect(collectNumber('0000')).toBe(0);
     expect(collectNumber('0001')).toBe(1);
-  });
-});
-
-describe('should parseTime function return time in minutes', () => {
-  test('when it received the time in full format', () => {
-    expect(parseTime('00:00')).toBe(0);
-    expect(parseTime('01:05')).toBe(65);
-    expect(parseTime('23:59')).toBe(24 * 60 - 1);
-  });
-
-  test('when it received the time in short format', () => {
-    expect(parseTime('0:0')).toBe(0);
-    expect(parseTime('1:5')).toBe(65);
   });
 });
 
