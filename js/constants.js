@@ -1,7 +1,9 @@
-export const MAX_SENTENCES_IN_FAKE_COMMENT_MESSAGE = 2;
 export const FAKE_PHOTOS_COUNT = 25;
+export const MIN_FAKE_PHOTO_ID = 1;
 export const FAKE_AVATARS_COUNT = 6;
+export const MAX_SENTENCES_IN_FAKE_COMMENT_MESSAGE = 2;
 export const MAX_FAKE_COMMENTS_PER_PHOTO = 30;
+export const MIN_FAKE_COMMENT_ID = 0;
 
 export const FakeLikes = {
   Min: 15,

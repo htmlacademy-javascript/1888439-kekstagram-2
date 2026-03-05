@@ -6,32 +6,54 @@ import {
   FAKE_USER_NAMES,
   FakeLikes,
   MAX_FAKE_COMMENTS_PER_PHOTO,
-  MAX_SENTENCES_IN_FAKE_COMMENT_MESSAGE
+  MAX_SENTENCES_IN_FAKE_COMMENT_MESSAGE,
+  MIN_FAKE_COMMENT_ID,
+  MIN_FAKE_PHOTO_ID
 } from './constants';
-import { cycleNum, getRandomInt } from './utils';
+import { getRandomInt, keepNumberInRange } from './utils';
+
+/**
+ * @typedef {Object} Comment
+ * @property {number} id
+ * @property {string} message
+ * @property {string} name
+ * @property {string} avatar
+ */
+
+/**
+ * @typedef {Object} Post
+ * @property {number} id
+ * @property {string} url
+ * @property {string} description
+ * @property {number} likes
+ * @property {Comment[]} comments
+ */
 
 /**
  * Generate fake photo path by id
+ *
  * @param {number} photoId - Fake photo id
  * @returns {string}
  */
 export const getFakePhotoPath = (photoId) => {
-  const limitedPhotoId = cycleNum(photoId, FAKE_PHOTOS_COUNT);
+  const limitedPhotoId = keepNumberInRange(photoId, FAKE_PHOTOS_COUNT);
   return `photos/${limitedPhotoId}.jpg`;
 };
 
 /**
  * Generate fake avatar path by id
+ *
  * @param {number} avatarId - Fake avatar id
  * @returns {string}
  */
 export const getFakeAvatarPath = (avatarId) => {
-  const restrictiveAvatarId = cycleNum(avatarId, FAKE_AVATARS_COUNT);
+  const restrictiveAvatarId = keepNumberInRange(avatarId, FAKE_AVATARS_COUNT);
   return `img/avatar-${restrictiveAvatarId}.svg`;
 };
 
 /**
  * Generates fake user comment message
+ *
  * @returns {string}
  */
 export const generateFakeMessage = () => {
@@ -50,7 +72,9 @@ export const generateFakeMessage = () => {
 
 /**
  * Generates fake comment by id
+ *
  * @param {number} id
+ * @returns {Comment}
  */
 export const generateFakeComment = (id) => ({
   id,
@@ -61,12 +85,14 @@ export const generateFakeComment = (id) => ({
 
 /**
  * Generate fake post by id
+ *
  * @param {number} id
+ * @return {Post}
  */
 export const generateFakePost = (id) => {
   const comments = Array.from(
     { length: getRandomInt(0, MAX_FAKE_COMMENTS_PER_PHOTO + 1) },
-    (_, idx) => generateFakeComment(idx),
+    (_, idx) => generateFakeComment(idx + MIN_FAKE_COMMENT_ID),
   );
 
   return {
@@ -80,9 +106,10 @@ export const generateFakePost = (id) => {
 
 /**
  * Generate specified count of fake posts
+ *
  * @param {number} count - Count of fake posts
- * @return {ReturnType<typeof generateFakePost>[]}
+ * @return {Post[]}
  */
 export const generateFakePosts = (count = FAKE_PHOTOS_COUNT) => (
-  Array.from({ length: count }, (_, idx) => generateFakePost(idx + 1))
+  Array.from({ length: count }, (_, idx) => generateFakePost(idx + MIN_FAKE_PHOTO_ID))
 );

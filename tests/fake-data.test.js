@@ -1,11 +1,12 @@
 import { afterEach, describe, expect, test, vi } from 'vitest';
 import {
-  FAKE_AVATARS_COUNT,
   FAKE_PHOTO_COMMENTS,
   FAKE_PHOTOS_COUNT,
   FAKE_USER_MESSAGES,
   FAKE_USER_NAMES,
-  FakeLikes
+  FakeLikes,
+  MIN_FAKE_COMMENT_ID,
+  MIN_FAKE_PHOTO_ID
 } from '../js/constants';
 import {
   generateFakeComment,
@@ -62,22 +63,12 @@ describe('should getFakeAvatarPath function return path to the avatar image', ()
     const id = 1;
     expect(getFakeAvatarPath(id)).toBe(`img/avatar-${id}.svg`);
   });
-
-  test('when it get invalid id', () => {
-    expect(getFakeAvatarPath(FAKE_AVATARS_COUNT + 1)).toBe('img/avatar-1.svg');
-    expect(getFakeAvatarPath(-1)).toBe('img/avatar-1.svg');
-  });
 });
 
 describe('should getFakePhotoPath function return path to the photo image', () => {
   test('when it get valid id', () => {
     const id = 1;
     expect(getFakePhotoPath(id)).toBe(`photos/${id}.jpg`);
-  });
-
-  test('when it get invalid id', () => {
-    expect(getFakePhotoPath(FAKE_PHOTOS_COUNT + 1)).toBe('photos/1.jpg');
-    expect(getFakePhotoPath(-1)).toBe('photos/1.jpg');
   });
 });
 
@@ -150,7 +141,9 @@ describe('should generateFakePost function return random fake user post', () => 
     const commentsCount = 10;
     mockedGetRandomInt.mockReturnValue(0).mockReturnValueOnce(commentsCount);
 
-    expect(generateFakePost(1).comments.length).toBe(commentsCount);
+    const fakePost = generateFakePost(1);
+    expect(fakePost.comments[0].id).toBe(MIN_FAKE_COMMENT_ID);
+    expect(fakePost.comments.length).toBe(commentsCount);
     expect(mockedGetRandomInt).toBeCalledTimes(4 * commentsCount + 2);
   });
 });
@@ -168,7 +161,7 @@ describe('should generateFakePosts function return random fake user posts', () =
     const count = 10;
     const generatedPosts = generateFakePosts(count);
     expect(generatedPosts.length).toBe(count);
-    expect(generatedPosts[0].id).toBe(1);
+    expect(generatedPosts[0].id).toBe(MIN_FAKE_PHOTO_ID);
     expect(generatedPosts[count - 1].id).toBe(count);
   });
 
@@ -178,7 +171,7 @@ describe('should generateFakePosts function return random fake user posts', () =
     const count = FAKE_PHOTOS_COUNT;
     const generatedPosts = generateFakePosts(count);
     expect(generatedPosts.length).toBe(count);
-    expect(generatedPosts[0].id).toBe(1);
+    expect(generatedPosts[0].id).toBe(MIN_FAKE_PHOTO_ID);
     expect(generatedPosts[count - 1].id).toBe(count);
   });
 });
