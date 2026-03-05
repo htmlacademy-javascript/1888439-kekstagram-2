@@ -72,6 +72,7 @@ export const collectNumber = (strOrNum) => {
 
 /**
  * Parses the time in the hh:mm format and returns the minutes
+ *
  * @param {string} timeStr - Time in the hh:mm format
  * @return {number}
  */
@@ -82,6 +83,7 @@ export const parseTime = (timeStr) => {
 
 /**
  * Checks that the meeting is within the specified range [workdayStart, workdayEnd]
+ *
  * @param {string} workdayStart - Start time of the working day in the format hh:mm
  * @param {string} workdayEnd - End time of the working day in the format hh:mm
  * @param {string} meetingBegin - Start time of the meeting in the format hh:mm

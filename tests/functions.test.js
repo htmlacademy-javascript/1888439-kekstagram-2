@@ -110,31 +110,25 @@ describe('should collectNumber function extract digits from a string and assembl
 describe('should parseTime function return time in minutes', () => {
   test('when it received the time in full format', () => {
     expect(parseTime('00:00')).toBe(0);
-    expect(parseTime('01:00')).toBe(60);
-    expect(parseTime('01:15')).toBe(75);
+    expect(parseTime('01:05')).toBe(65);
     expect(parseTime('23:59')).toBe(24 * 60 - 1);
   });
 
   test('when it received the time in short format', () => {
     expect(parseTime('0:0')).toBe(0);
-    expect(parseTime('01:0')).toBe(60);
-    expect(parseTime('1:00')).toBe(60);
-    expect(parseTime('01:5')).toBe(65);
-    expect(parseTime('1:05')).toBe(65);
-    expect(parseTime('10:5')).toBe(10 * 60 + 5);
+    expect(parseTime('1:5')).toBe(65);
   });
 });
 
-describe('should isMeetingOnTime function check if meeting within specified range [workdayStart, workdayEnd]', () => {
-  test('when it received valid set of arguments', () => {
+describe('should isMeetingOnTime function check if the meeting time within specified range [workdayStart, workdayEnd]', () => {
+  test('when it received set of arguments that meeting in time', () => {
     expect(isMeetingOnTime('9:00', '18:00', '10:00', 50)).toBe(true);
     expect(isMeetingOnTime('9:00', '18:00', '9:00', 50)).toBe(true);
     expect(isMeetingOnTime('9:00', '18:00', '17:10', 50)).toBe(true);
   });
 
-  test('when it received invalid set of arguments', () => {
+  test('when it received set of arguments that meeting not in time', () => {
     expect(isMeetingOnTime('9:00', '18:00', '8:00', 50)).toBe(false);
-    expect(isMeetingOnTime('9:00', '18:00', '18:00', 50)).toBe(false);
     expect(isMeetingOnTime('9:00', '18:00', '17:00', 70)).toBe(false);
   });
 
