@@ -1,3 +1,5 @@
+import { parseTime } from './utils';
+
 /**
  * Checks that the string is shorter than or equal to the specified length
  *
@@ -67,4 +69,24 @@ export const collectNumber = (strOrNum) => {
   }
 
   return parseInt(collectedDigits.join(''), 10);
+};
+
+/**
+ * Checks that the meeting is within the specified range [workdayStart, workdayEnd]
+ *
+ * @param {string} workdayStart - Start time of the working day in the format hh:mm
+ * @param {string} workdayEnd - End time of the working day in the format hh:mm
+ * @param {string} meetingBegin - Start time of the meeting in the format hh:mm
+ * @param {number} meetingDuration - Meeting duration
+ * @returns {boolean}
+ */
+export const isMeetingOnTime = (workdayStart, workdayEnd, meetingBegin, meetingDuration) => {
+  const workdayStartMins = parseTime(workdayStart);
+  const meetingBeginMins = parseTime(meetingBegin);
+  if (workdayStartMins > meetingBeginMins) {
+    return false;
+  }
+
+  const workdayEndMins = parseTime(workdayEnd);
+  return meetingBeginMins + meetingDuration <= workdayEndMins;
 };

@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'vitest';
-import { collectNumber, isNotLonger, isPalindrome } from '../js/functions';
+import { collectNumber, isMeetingOnTime, isNotLonger, isPalindrome } from '../js/functions';
 
 describe('should the isNotLonger function check the maximum length correctly', () => {
   test('when it receives on character', () => {
@@ -104,5 +104,24 @@ describe('should collectNumber function extract digits from a string and assembl
     expect(collectNumber('   ')).toBeNaN();
     expect(collectNumber('0000')).toBe(0);
     expect(collectNumber('0001')).toBe(1);
+  });
+});
+
+describe('should isMeetingOnTime function check if the meeting time within specified range [workdayStart, workdayEnd]', () => {
+  test('when it received set of arguments that meeting in time', () => {
+    expect(isMeetingOnTime('9:00', '18:00', '10:00', 50)).toBe(true);
+    expect(isMeetingOnTime('9:00', '18:00', '9:00', 50)).toBe(true);
+    expect(isMeetingOnTime('9:00', '18:00', '17:10', 50)).toBe(true);
+  });
+
+  test('when it received set of arguments that meeting not in time', () => {
+    expect(isMeetingOnTime('9:00', '18:00', '8:00', 50)).toBe(false);
+    expect(isMeetingOnTime('9:00', '18:00', '17:00', 70)).toBe(false);
+  });
+
+  test('when are the boundary cases', () => {
+    expect(isMeetingOnTime('9:00', '18:00', '17:10', 0)).toBe(true);
+    expect(isMeetingOnTime('9:00', '18:00', '18:00', 0)).toBe(true);
+    expect(isMeetingOnTime('9:00', '18:00', '9:00', 0)).toBe(true);
   });
 });

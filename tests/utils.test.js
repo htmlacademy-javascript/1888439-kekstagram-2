@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
-import { getRandomInt, keepNumberInRange } from '../js/utils';
+import { getRandomInt, keepNumberInRange, parseTime } from '../js/utils';
 
 describe('should getRandomInt function return the deterministic value', () => {
   beforeEach(() => {
@@ -54,5 +54,18 @@ describe('should keepNumberInRange function have the deterministic algorithm', (
 
   test('when the limit less than 1', () => {
     expect(() => keepNumberInRange(randomNum, 0)).toThrowError(RangeError);
+  });
+});
+
+describe('should parseTime function return time in minutes', () => {
+  test('when it received the time in full format', () => {
+    expect(parseTime('00:00')).toBe(0);
+    expect(parseTime('01:05')).toBe(65);
+    expect(parseTime('23:59')).toBe(24 * 60 - 1);
+  });
+
+  test('when it received the time in short format', () => {
+    expect(parseTime('0:0')).toBe(0);
+    expect(parseTime('1:5')).toBe(65);
   });
 });
