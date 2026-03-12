@@ -11,8 +11,11 @@
     "url": "https://github.com/htmlacademy-javascript/1888439-kekstagram-2/issues"
   },
   "devDependencies": {
+    "@testing-library/dom": "9.3.4",
+    "@testing-library/jest-dom": "6.9.1",
     "eslint": "8.48.0",
     "eslint-config-htmlacademy": "9.1.1",
+    "jsdom": "22.1.0",
     "vite": "4.4.9",
     "vitest": "1.6.1"
   },
