@@ -21,7 +21,7 @@ import { getRandomInt, keepNumberInRange } from './utils';
  */
 
 /**
- * @typedef {Object} Post
+ * @typedef {Object} Photo
  * @property {number} id
  * @property {string} url
  * @property {string} description
@@ -87,7 +87,7 @@ export const generateFakeComment = (id) => ({
  * Generate fake post by id
  *
  * @param {number} id
- * @return {Post}
+ * @return {Photo}
  */
 export const generateFakePost = (id) => {
   const comments = Array.from(
@@ -108,7 +108,7 @@ export const generateFakePost = (id) => {
  * Generate specified count of fake posts
  *
  * @param {number} count - Count of fake posts
- * @return {Post[]}
+ * @return {Photo[]}
  */
 export const generateFakePosts = (count = FAKE_PHOTOS_COUNT) => (
   Array.from({ length: count }, (_, idx) => generateFakePost(idx + MIN_FAKE_PHOTO_ID))
