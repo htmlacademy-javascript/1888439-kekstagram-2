@@ -9,8 +9,8 @@ import {
   MAX_SENTENCES_IN_FAKE_COMMENT_MESSAGE,
   MIN_FAKE_COMMENT_ID,
   MIN_FAKE_PHOTO_ID
-} from './constants';
-import { getRandomInt, keepNumberInRange } from './utils';
+} from './constants.js';
+import { getRandomInt, keepNumberInRange } from './utils.js';
 
 /**
  * @typedef {Object} Comment
