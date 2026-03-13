@@ -1,4 +1,4 @@
-import { parseTime } from './utils';
+import { parseTime } from './utils.js';
 
 /**
  * Checks that the string is shorter than or equal to the specified length
