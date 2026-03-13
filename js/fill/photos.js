@@ -36,7 +36,7 @@ export const createFragmentWithPhotos = (photos) => {
   const photoTemplate = document.querySelector('#picture');
 
   if (!photoTemplate) {
-    throw new Error('Selected element #picture does not found!');
+    throw new Error('Selected element #picture not found!');
   }
 
   photos.forEach((photo) => {
@@ -56,7 +56,7 @@ export const fillDocumentWithPhotos = (photos) => {
   const picturesEl = document.querySelector('.pictures');
 
   if (!picturesEl) {
-    throw new Error('Selected element .pictures does not found!');
+    throw new Error('Selected element .pictures not found!');
   }
 
   const fragmentWithPhotos = createFragmentWithPhotos(photos);
