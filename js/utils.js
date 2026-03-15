@@ -51,3 +51,44 @@ export const parseTime = (timeStr) => {
   const [hours, minutes] = timeStr.split(':', 2).map((component) => parseInt(component, 10));
   return hours * 60 + minutes;
 };
+
+/**
+ * Creates a DocumentFragment and fills it with data
+ *
+ * @template DataType
+ * @template {HTMLElement} ElementType
+ * @param {DataType[] | DataType} data
+ * @param {(data: DataType) => ElementType} fillCb
+ * @returns {DocumentFragment}
+ */
+export const createFragmentWith = (data, fillCb) => {
+  const fragment = document.createDocumentFragment();
+
+  if (Array.isArray(data)) {
+    data.forEach((dataItem) => {
+      fragment.append(fillCb(dataItem));
+    });
+  } else {
+    fragment.append(fillCb(data));
+  }
+
+  return fragment;
+};
+
+/**
+ * Selects an element in the document
+ * or in the provided root element
+ *
+ * @param {string} selector
+ * @param {HTMLElement} [rootEl]
+ * @returns {HTMLElement}
+ */
+export const selectOrThrow = (selector, rootEl) => {
+  const selectedElement = (rootEl ?? document).querySelector(selector);
+
+  if (!selectedElement) {
+    throw new Error(`Selected element '${selector}' not found!`);
+  }
+
+  return selectedElement;
+};

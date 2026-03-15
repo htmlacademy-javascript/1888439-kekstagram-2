@@ -1,3 +1,17 @@
+import { createFragmentWith, selectOrThrow } from '../utils.js';
+import { openPhotoViewer } from './photo-viewer.js';
+
+/**
+ * Handles click event on photo thumbnail
+ *
+ * @param {MouseEvent} evt
+ * @param {import('../fake-data.js').Photo} photo
+ */
+const handlePhotoClick = (evt, photo) => {
+  evt.preventDefault();
+  openPhotoViewer(photo);
+};
+
 /**
  * Fills photo template element with data
  *
@@ -8,17 +22,21 @@
 export const fillPhotoTemplate = (photoTemplate, photo) => {
   const photoElement = photoTemplate.cloneNode(true);
 
+  /** @type {HTMLAnchorElement} */
+  const anchorEl = photoElement.querySelector('.picture');
   /** @type {HTMLImageElement} */
   const imgEl = photoElement.querySelector('.picture__img');
   /** @type {HTMLSpanElement} */
-  const commentEl = photoElement.querySelector('.picture__comments');
+  const commentsCountEl = photoElement.querySelector('.picture__comments');
   /** @type {HTMLSpanElement} */
-  const likesEl = photoElement.querySelector('.picture__likes');
+  const likesCountEl = photoElement.querySelector('.picture__likes');
 
+  anchorEl.href = photo.url;
+  anchorEl.addEventListener('click', (evt) => handlePhotoClick(evt, photo));
   imgEl.src = photo.url;
   imgEl.alt = photo.description;
-  commentEl.textContent = photo.comments.length;
-  likesEl.textContent = photo.likes;
+  commentsCountEl.textContent = photo.comments.length;
+  likesCountEl.textContent = photo.likes;
 
   return photoElement;
 };
@@ -30,18 +48,12 @@ export const fillPhotoTemplate = (photoTemplate, photo) => {
  * @returns {DocumentFragment}
  */
 export const createFragmentWithPhotos = (photos) => {
-  const fragment = document.createDocumentFragment();
-
-  /** @type {HTMLTemplateElement | null} */
-  const photoTemplate = document.querySelector('#picture');
-
-  if (!photoTemplate) {
-    throw new Error('Selected element #picture not found!');
-  }
-
-  photos.forEach((photo) => {
-    fragment.append(fillPhotoTemplate(photoTemplate.content, photo));
-  });
+  /** @type {HTMLTemplateElement} */
+  const photoTemplate = selectOrThrow('#picture');
+  const fragment = createFragmentWith(
+    photos,
+    (photo) => fillPhotoTemplate(photoTemplate.content, photo),
+  );
 
   return fragment;
 };
@@ -53,11 +65,7 @@ export const createFragmentWithPhotos = (photos) => {
  * @return {void}
  */
 export const fillDocumentWithPhotos = (photos) => {
-  const picturesEl = document.querySelector('.pictures');
-
-  if (!picturesEl) {
-    throw new Error('Selected element .pictures not found!');
-  }
+  const picturesEl = selectOrThrow('.pictures');
 
   const fragmentWithPhotos = createFragmentWithPhotos(photos);
   picturesEl.append(fragmentWithPhotos);

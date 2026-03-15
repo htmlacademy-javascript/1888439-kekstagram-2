@@ -60,7 +60,7 @@ describe('should createFragmentWithPhotos function has deterministic behaviour',
     const generatedPhotos = generateFakePosts(1);
 
     expect(() => createFragmentWithPhotos(generatedPhotos))
-      .toThrowError(/#picture not found/);
+      .toThrowError(/'#picture' not found/);
   });
 });
 
@@ -105,6 +105,6 @@ describe('should fillDocumentWithPhotos function has deterministic behaviour', (
     const generatedPhotos = generateFakePosts(1);
 
     expect(() => fillDocumentWithPhotos(generatedPhotos))
-      .toThrowError(/\.pictures not found/);
+      .toThrowError(/'\.pictures' not found/);
   });
 });
