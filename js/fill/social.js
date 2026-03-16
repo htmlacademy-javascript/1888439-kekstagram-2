@@ -1,3 +1,4 @@
+import { HIDE_ELEMENT_CLASS } from '../constants.js';
 import { createFragmentWith, selectOrThrow } from '../utils.js';
 
 /**
@@ -57,7 +58,7 @@ export const fillSocial = (rootEl, photo) => {
   likesCountEl.textContent = photo.likes;
   shownCommentsEl.textContent = photo.comments.length;
   totalCommentsEl.textContent = photo.comments.length;
-  commentsCountEl.classList.add('hidden');
+  commentsCountEl.classList.add(HIDE_ELEMENT_CLASS);
   commentsContainer.replaceChildren(createFragmentWithComments(photo.comments));
-  commentsLoaderBtn.classList.add('hidden');
+  commentsLoaderBtn.classList.add(HIDE_ELEMENT_CLASS);
 };

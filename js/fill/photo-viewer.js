@@ -1,3 +1,4 @@
+import { HIDE_ELEMENT_CLASS, MODAL_OPEN_CLASS } from '../constants.js';
 import { fillSocial } from './social.js';
 
 /**
@@ -17,10 +18,10 @@ export const openPhotoViewer = (photo) => {
 
   imgEl.src = photo.url;
   imgEl.alt = photo.description;
-  photoViewerEl.classList.remove('hidden');
+  photoViewerEl.classList.remove(HIDE_ELEMENT_CLASS);
   closeBtn.addEventListener('click', handleCloseClick);
 
-  document.body.classList.add('modal-open');
+  document.body.classList.add(MODAL_OPEN_CLASS);
   window.addEventListener('keydown', handleEscKeydown);
 };
 
@@ -31,10 +32,10 @@ export const closePhotoViewer = () => {
   const photoViewerEl = document.querySelector('.big-picture');
   const closeBtn = photoViewerEl.querySelector('.big-picture__cancel');
 
-  photoViewerEl.classList.add('hidden');
+  photoViewerEl.classList.add(HIDE_ELEMENT_CLASS);
   closeBtn.removeEventListener('click', handleCloseClick);
 
-  document.body.classList.remove('modal-open');
+  document.body.classList.remove(MODAL_OPEN_CLASS);
   window.removeEventListener('keydown', handleEscKeydown);
 };
 
