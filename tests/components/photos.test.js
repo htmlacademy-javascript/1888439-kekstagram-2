@@ -1,8 +1,18 @@
-import { queryByAltText, queryByText, screen } from '@testing-library/dom';
-import { afterEach, describe, expect, test } from 'vitest';
-import { FAKE_PHOTOS_COUNT, MIN_FAKE_PHOTO_ID } from '../../js/constants';
+import { queryByAltText, queryByAttribute, queryByText, screen } from '@testing-library/dom';
+import userEvent from '@testing-library/user-event';
+import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
+import { closePhotoViewer } from '../../js/components/photo-viewer';
+import { createFragmentWithPhotos, fillDocumentWithPhotos, fillPhotoTemplate } from '../../js/components/photos';
+import { FAKE_PHOTOS_COUNT, HIDE_ELEMENT_CLASS, MIN_FAKE_PHOTO_ID, MODAL_OPEN_CLASS } from '../../js/constants';
 import { generateFakePost, generateFakePosts } from '../../js/fake-data';
-import { createFragmentWithPhotos, fillDocumentWithPhotos, fillPhotoTemplate } from '../../js/fill/photos';
+
+vi.mock('../../js/components/social.js', async (importOriginal) => {
+  const originalModule = await importOriginal();
+  return {
+    ...originalModule,
+    fillSocial: vi.fn(),
+  };
+});
 
 describe('should fillPhoto function return DocumentFragment filled width photo data', () => {
   const pictureTemplate = document.createElement('template');
@@ -28,6 +38,7 @@ describe('should fillPhoto function return DocumentFragment filled width photo d
 
     expect(queryByText(container, generatedPhoto.likes)).not.toBeNull();
     expect(queryByText(container, generatedPhoto.comments.length)).not.toBeNull();
+    expect(queryByAttribute('href', container, generatedPhoto.url)).not.toBeNull();
   });
 });
 
@@ -106,5 +117,57 @@ describe('should fillDocumentWithPhotos function has deterministic behaviour', (
 
     expect(() => fillDocumentWithPhotos(generatedPhotos))
       .toThrowError(/'\.pictures' not found/);
+  });
+});
+
+describe('should display photo viewer', () => {
+  const photoViewTestId = 'photo-view';
+  const fakePhoto = generateFakePost(MIN_FAKE_PHOTO_ID);
+
+  beforeEach(() => {
+    document.body.innerHTML = `
+      <section class="pictures"></section>
+
+      <section class="big-picture overlay ${HIDE_ELEMENT_CLASS}" data-testid="${photoViewTestId}">
+        <h2 class="big-picture__title  visually-hidden">Просмотр фотографии</h2>
+        <div class="big-picture__preview">
+          <div class="big-picture__img">
+            <img src="img/logo-background-3.jpg" alt="Девушка в купальнике" width="600" height="600">
+          </div>
+          <button type="reset" class="big-picture__cancel  cancel" id="picture-cancel">Закрыть</button>
+        </div>
+      </section>
+
+      <template id="picture">
+        <a href="#" class="picture">
+          <img class="picture__img" src="" width="182" height="182" alt="Случайная фотография">
+          <p class="picture__info">
+            <span class="picture__comments"></span>
+            <span class="picture__likes"></span>
+          </p>
+        </a>
+      </template>
+    `;
+
+    fillDocumentWithPhotos([fakePhoto]);
+  });
+
+  afterEach(() => {
+    closePhotoViewer();
+    document.body.innerHTML = '';
+    document.body.className = '';
+  });
+
+  test('when user clicked on photo preview', async () => {
+    const user = userEvent.setup();
+    const previewElement = screen.getByRole(
+      'link',
+      { name: new RegExp(fakePhoto.description) }
+    );
+
+    await user.click(previewElement);
+
+    expect(document.body).toHaveClass(MODAL_OPEN_CLASS);
+    expect(screen.getByTestId(photoViewTestId)).not.toHaveClass(HIDE_ELEMENT_CLASS);
   });
 });

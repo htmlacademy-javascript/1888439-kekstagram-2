@@ -1,8 +1,8 @@
 import { queryAllByText, queryByAltText, queryByText } from '@testing-library/dom';
 import { afterEach, beforeEach, describe, expect, test } from 'vitest';
+import { createFragmentWithComments, fillComment, fillSocial } from '../../js/components/social';
 import { MIN_FAKE_COMMENT_ID, MIN_FAKE_PHOTO_ID } from '../../js/constants';
 import { generateFakeComment, generateFakePost } from '../../js/fake-data';
-import { createFragmentWithComments, fillComment, fillSocial } from '../../js/fill/social';
 
 describe('should fillComment function return DocumentFragment filled width comment data', () => {
   const commentTemplate = document.createElement('template');

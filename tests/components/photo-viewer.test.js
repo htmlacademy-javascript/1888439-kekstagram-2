@@ -1,12 +1,12 @@
 import { screen } from '@testing-library/dom';
 import userEvent from '@testing-library/user-event';
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
+import { closePhotoViewer, openPhotoViewer } from '../../js/components/photo-viewer';
+import { fillSocial } from '../../js/components/social';
 import { HIDE_ELEMENT_CLASS, MIN_FAKE_PHOTO_ID, MODAL_OPEN_CLASS } from '../../js/constants';
 import { generateFakePost } from '../../js/fake-data';
-import { closePhotoViewer, openPhotoViewer } from '../../js/fill/photo-viewer';
-import { fillSocial } from '../../js/fill/social';
 
-vi.mock('../../js/fill/social.js', async (importOriginal) => {
+vi.mock('../../js/components/social.js', async (importOriginal) => {
   const originalModule = await importOriginal();
   return {
     ...originalModule,
