@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'vitest';
-import { collectNumber, isMeetingOnTime, isNotLonger, isPalindrome } from '../js/functions';
+import { collectNumber, isMeetingOnTime, isNotLonger, isPalindrome } from '../../js/functions.js';
 
 describe('should the isNotLonger function check the maximum length correctly', () => {
   test('when it receives on character', () => {
