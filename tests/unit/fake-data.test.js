@@ -7,7 +7,7 @@ import {
   FakeLikes,
   MIN_FAKE_COMMENT_ID,
   MIN_FAKE_PHOTO_ID
-} from '../js/constants';
+} from '../../js/constants.js';
 import {
   generateFakeComment,
   generateFakeMessage,
@@ -15,10 +15,10 @@ import {
   generateFakePosts,
   getFakeAvatarPath,
   getFakePhotoPath
-} from '../js/fake-data';
-import { getRandomInt } from '../js/utils';
+} from '../../js/fake-data.js';
+import { getRandomInt } from '../../js/utils.js';
 
-vi.mock('../js/utils.js', async (importOriginal) => {
+vi.mock('../../js/utils.js', async (importOriginal) => {
   const originalModule = await importOriginal();
   return {
     ...originalModule,

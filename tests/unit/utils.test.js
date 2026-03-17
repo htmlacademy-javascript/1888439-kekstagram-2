@@ -1,6 +1,6 @@
 import { queryByText } from '@testing-library/dom';
 import { afterAll, afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
-import { createFragmentWith, getRandomInt, keepNumberInRange, parseTime, selectOrThrow } from '../js/utils';
+import { createFragmentWith, getRandomInt, keepNumberInRange, parseTime, selectOrThrow } from '../../js/utils.js';
 
 describe('should getRandomInt function return the deterministic value', () => {
   beforeEach(() => {

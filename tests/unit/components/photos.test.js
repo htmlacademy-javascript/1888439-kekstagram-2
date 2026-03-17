@@ -1,21 +1,14 @@
 import { queryByAltText, queryByAttribute, queryByText, screen } from '@testing-library/dom';
 import userEvent from '@testing-library/user-event';
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
-import { closePhotoViewer } from '../../js/components/photo-viewer';
-import { createFragmentWithPhotos, fillDocumentWithPhotos, fillPhotoTemplate } from '../../js/components/photos';
-import { FAKE_PHOTOS_COUNT, HIDE_ELEMENT_CLASS, MIN_FAKE_PHOTO_ID, MODAL_OPEN_CLASS } from '../../js/constants';
-import { generateFakePost, generateFakePosts } from '../../js/fake-data';
+import { closePhotoViewer } from '../../../js/components/photo-viewer.js';
+import { createFragmentWithPhotos, fillDocumentWithPhotos, fillPhotoTemplate } from '../../../js/components/photos.js';
+import { FAKE_PHOTOS_COUNT, HIDE_ELEMENT_CLASS, MIN_FAKE_PHOTO_ID, MODAL_OPEN_CLASS } from '../../../js/constants.js';
+import { generateFakePost, generateFakePosts } from '../../../js/fake-data.js';
 
-vi.mock('../../js/components/social.js', async (importOriginal) => {
-  const originalModule = await importOriginal();
-  return {
-    ...originalModule,
-    fillSocial: vi.fn(),
-  };
-});
-
-describe('should fillPhoto function return DocumentFragment filled width photo data', () => {
+const createPictureTemplate = () => {
   const pictureTemplate = document.createElement('template');
+  pictureTemplate.id = 'picture';
   pictureTemplate.innerHTML = `
     <a href="#" class="picture">
       <img class="picture__img" src="" width="182" height="182" alt="Случайная фотография">
@@ -25,6 +18,19 @@ describe('should fillPhoto function return DocumentFragment filled width photo d
       </p>
     </a>
   `;
+  return pictureTemplate;
+};
+
+vi.mock('../../../js/components/social.js', async (importOriginal) => {
+  const originalModule = await importOriginal();
+  return {
+    ...originalModule,
+    fillSocial: vi.fn(),
+  };
+});
+
+describe('should fillPhoto function return DocumentFragment filled width photo data', () => {
+  const pictureTemplate = createPictureTemplate();
 
   test('when it gets data', () => {
     const generatedPhoto = generateFakePost(MIN_FAKE_PHOTO_ID);
@@ -48,17 +54,7 @@ describe('should createFragmentWithPhotos function has deterministic behaviour',
   });
 
   test('when it gets data', () => {
-    document.body.innerHTML = `
-      <template id="picture">
-        <a href="#" class="picture">
-          <img class="picture__img" src="" width="182" height="182" alt="Случайная фотография">
-          <p class="picture__info">
-            <span class="picture__comments"></span>
-            <span class="picture__likes"></span>
-          </p>
-        </a>
-      </template>
-    `;
+    document.body.append(createPictureTemplate());
     const generatedPhotos = generateFakePosts(FAKE_PHOTOS_COUNT);
 
     const photosFragment = createFragmentWithPhotos(generatedPhotos);
@@ -81,18 +77,8 @@ describe('should fillDocumentWithPhotos function has deterministic behaviour', (
   });
 
   test('when it gets data', () => {
-    document.body.innerHTML = `
-      <section class="pictures"></section>
-      <template id="picture">
-        <a href="#" class="picture">
-          <img class="picture__img" src="" width="182" height="182" alt="Случайная фотография">
-          <p class="picture__info">
-            <span class="picture__comments"></span>
-            <span class="picture__likes"></span>
-          </p>
-        </a>
-      </template>
-    `;
+    document.body.innerHTML = '<section class="pictures"></section>';
+    document.body.append(createPictureTemplate());
     const generatedPhotos = generateFakePosts(FAKE_PHOTOS_COUNT);
 
     fillDocumentWithPhotos(generatedPhotos);
@@ -102,17 +88,7 @@ describe('should fillDocumentWithPhotos function has deterministic behaviour', (
   });
 
   test('when container not found', () => {
-    document.body.innerHTML = `
-      <template id="picture">
-        <a href="#" class="picture">
-          <img class="picture__img" src="" width="182" height="182" alt="Случайная фотография">
-          <p class="picture__info">
-            <span class="picture__comments"></span>
-            <span class="picture__likes"></span>
-          </p>
-        </a>
-      </template>
-    `;
+    document.body.append(createPictureTemplate());
     const generatedPhotos = generateFakePosts(1);
 
     expect(() => fillDocumentWithPhotos(generatedPhotos))
@@ -137,17 +113,8 @@ describe('should display photo viewer', () => {
           <button type="reset" class="big-picture__cancel  cancel" id="picture-cancel">Закрыть</button>
         </div>
       </section>
-
-      <template id="picture">
-        <a href="#" class="picture">
-          <img class="picture__img" src="" width="182" height="182" alt="Случайная фотография">
-          <p class="picture__info">
-            <span class="picture__comments"></span>
-            <span class="picture__likes"></span>
-          </p>
-        </a>
-      </template>
     `;
+    document.body.append(createPictureTemplate());
 
     fillDocumentWithPhotos([fakePhoto]);
   });

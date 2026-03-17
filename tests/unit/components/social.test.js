@@ -1,21 +1,25 @@
 import { queryAllByText, queryByAltText, queryByText } from '@testing-library/dom';
 import { afterEach, beforeEach, describe, expect, test } from 'vitest';
-import { createFragmentWithComments, fillComment, fillSocial } from '../../js/components/social';
-import { MIN_FAKE_COMMENT_ID, MIN_FAKE_PHOTO_ID } from '../../js/constants';
-import { generateFakeComment, generateFakePost } from '../../js/fake-data';
+import { createFragmentWithComments, fillComment, fillSocial } from '../../../js/components/social.js';
+import { MIN_FAKE_COMMENT_ID, MIN_FAKE_PHOTO_ID } from '../../../js/constants.js';
+import { generateFakeComment, generateFakePost } from '../../../js/fake-data.js';
 
-describe('should fillComment function return DocumentFragment filled width comment data', () => {
+const createCommentTemplate = () => {
   const commentTemplate = document.createElement('template');
+  commentTemplate.id = 'comment';
   commentTemplate.innerHTML = `
     <li class="social__comment">
       <img class="social__picture" src="img/avatar-4.svg" alt="Аватар комментатора фотографии" width="35" height="35">
       <p class="social__text">Мега фото! Просто обалдеть. Как вам так удалось?</p>
     </li>
   `;
+  return commentTemplate;
+};
 
+describe('should fillComment function return DocumentFragment filled width comment data', () => {
   test('when it gets data', () => {
     const fakeComment = generateFakeComment(MIN_FAKE_COMMENT_ID);
-
+    const commentTemplate = createCommentTemplate();
     const fragment = fillComment(commentTemplate.content, fakeComment);
     const container = document.createElement('div');
     container.append(fragment);
@@ -34,14 +38,7 @@ describe('should createFragmentWithComments function has deterministic behaviour
   });
 
   test('when it gets data', () => {
-    document.body.innerHTML = `
-      <template id="comment">
-        <li class="social__comment">
-          <img class="social__picture" src="img/avatar-4.svg" alt="Аватар комментатора фотографии" width="35" height="35">
-          <p class="social__text">Мега фото! Просто обалдеть. Как вам так удалось?</p>
-        </li>
-      </template>
-    `;
+    document.body.append(createCommentTemplate());
     const commentsCount = 3;
     const fakeComments = Array.from(
       { length: commentsCount },
@@ -88,14 +85,7 @@ describe('should fillSocial function fill root of social element with given phot
       </div>
     `;
 
-    document.body.innerHTML = `
-      <template id="comment">
-        <li class="social__comment">
-          <img class="social__picture" src="img/avatar-4.svg" alt="Аватар комментатора фотографии" width="35" height="35">
-          <p class="social__text">Мега фото! Просто обалдеть. Как вам так удалось?</p>
-        </li>
-      </template>
-    `;
+    document.body.append(createCommentTemplate());
   });
 
   afterEach(() => {
