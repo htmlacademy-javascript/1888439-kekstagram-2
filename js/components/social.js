@@ -1,5 +1,9 @@
-import { HIDE_ELEMENT_CLASS } from '../constants.js';
+import { HIDE_ELEMENT_CLASS, LOAD_MORE_INCREMENT } from '../constants.js';
 import { createFragmentWith, selectOrThrow } from '../utils.js';
+
+/** @type {import('../fake-data.js').Comment[]} */
+let currentComments = [];
+let shownCommentsPosition = 0;
 
 /**
  * Fills photo template element with comment data
@@ -40,6 +44,41 @@ export const createFragmentWithComments = (comments) => {
 };
 
 /**
+ * Extracts the next batch of comments from currentComments
+ * of size LOAD_MORE_INCREMENT
+ *
+ * @returns {import('../fake-data.js').Comment[]}
+ */
+const getNextComments = () => {
+  const previousCommentsPosition = shownCommentsPosition;
+  shownCommentsPosition = shownCommentsPosition + LOAD_MORE_INCREMENT;
+
+  return currentComments.slice(previousCommentsPosition, shownCommentsPosition);
+};
+
+/**
+ * Appends the next batch of comments to the comments container element
+ *
+ * @param {HTMLElement} rootEl
+ */
+const appendComments = (rootEl) => {
+  const commentsCountEl = rootEl.querySelector('.social__comment-count');
+  const shownCommentsEl = commentsCountEl.querySelector('.social__comment-shown-count');
+  const commentsContainer = rootEl.querySelector('.social__comments');
+  const commentsLoaderBtn = rootEl.querySelector('.social__comments-loader');
+
+  commentsContainer.append(
+    createFragmentWithComments(getNextComments()),
+  );
+  shownCommentsEl.textContent = Math.min(shownCommentsPosition, currentComments.length);
+
+  if (shownCommentsPosition >= currentComments.length) {
+    commentsLoaderBtn.removeEventListener('click', handleClickMoreButton);
+    commentsLoaderBtn.classList.add(HIDE_ELEMENT_CLASS);
+  }
+};
+
+/**
  * Fills socials section with comments
  *
  * @param {HTMLElement} rootEl
@@ -49,16 +88,38 @@ export const fillSocial = (rootEl, photo) => {
   const descriptionEl = rootEl.querySelector('.social__caption');
   const likesCountEl = rootEl.querySelector('.likes-count');
   const commentsCountEl = rootEl.querySelector('.social__comment-count');
-  const shownCommentsEl = commentsCountEl.querySelector('.social__comment-shown-count');
   const totalCommentsEl = commentsCountEl.querySelector('.social__comment-total-count');
+  const shownCommentsEl = commentsCountEl.querySelector('.social__comment-shown-count');
   const commentsContainer = rootEl.querySelector('.social__comments');
   const commentsLoaderBtn = rootEl.querySelector('.social__comments-loader');
 
+  currentComments = photo.comments.slice();
+  shownCommentsPosition = 0;
+
+  totalCommentsEl.textContent = currentComments.length;
+  commentsContainer.replaceChildren(
+    createFragmentWithComments(getNextComments()),
+  );
+  shownCommentsEl.textContent = Math.min(shownCommentsPosition, currentComments.length);
   descriptionEl.textContent = photo.description;
   likesCountEl.textContent = photo.likes;
-  shownCommentsEl.textContent = photo.comments.length;
-  totalCommentsEl.textContent = photo.comments.length;
-  commentsCountEl.classList.add(HIDE_ELEMENT_CLASS);
-  commentsContainer.replaceChildren(createFragmentWithComments(photo.comments));
+
+  if (shownCommentsPosition < currentComments.length) {
+    commentsLoaderBtn.classList.remove(HIDE_ELEMENT_CLASS);
+    commentsLoaderBtn.addEventListener('click', handleClickMoreButton);
+    return;
+  }
+
   commentsLoaderBtn.classList.add(HIDE_ELEMENT_CLASS);
 };
+
+/**
+ * Handles click on show more comments button
+ *
+ * @param {MouseEvent} evt
+ */
+function handleClickMoreButton(evt) {
+  evt.preventDefault();
+  const socialEl = evt.target.closest('.social');
+  appendComments(socialEl);
+}
