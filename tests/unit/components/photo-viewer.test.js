@@ -64,7 +64,7 @@ describe('should be correct DOM changes', () => {
   test('when photo view modal is closes', () => {
     document.body.classList.add(MODAL_OPEN_CLASS);
     document.body.innerHTML = getPictureSectionHtml(false);
-    const closeButton = screen.getByRole('button', { value: 'Закрыть' });
+    const closeButton = screen.getByRole('button', { name: 'Закрыть' });
     vi.spyOn(closeButton, 'removeEventListener').mockImplementationOnce();
 
     closePhotoViewer();
@@ -102,7 +102,7 @@ describe('should closing events be handled correctly', () => {
 
   test('when user click the close button', async () => {
     const user = userEvent.setup();
-    const closeButtonEl = screen.getByRole('button', { value: 'Закрыть' });
+    const closeButtonEl = screen.getByRole('button', { name: 'Закрыть' });
 
     await user.click(closeButtonEl);
 
