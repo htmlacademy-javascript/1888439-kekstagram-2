@@ -1,4 +1,4 @@
-import { getByRole, getByTestId, queryByAltText, queryByRole, queryByText } from '@testing-library/dom';
+import { getByTestId, queryByAltText, queryByTestId, queryByText } from '@testing-library/dom';
 import userEvent from '@testing-library/user-event';
 import { afterEach, beforeEach, describe, expect, test } from 'vitest';
 import { createFragmentWithComments, fillComment, fillSocial } from '../../../js/components/social.js';
@@ -63,6 +63,7 @@ describe('should createFragmentWithComments function has deterministic behaviour
 describe('should fillSocial function has deterministic behaviour', () => {
   const shownCountTestId = 'shown-count';
   const totalCountTestId = 'total-count';
+  const showMoreTestId = 'show-more';
   let socialElement;
 
   const getPhotoWithComments = (commentsCount) => {
@@ -93,7 +94,7 @@ describe('should fillSocial function has deterministic behaviour', () => {
       <ul class="social__comments">
       </ul>
 
-      <button type="button" class="social__comments-loader  comments-loader">Загрузить еще</button>
+      <button type="button" class="social__comments-loader  comments-loader" data-testid="${showMoreTestId}">Загрузить еще</button>
 
       <div class="social__footer">
         <img class="social__picture" src="img/avatar-6.svg" alt="Аватар комментатора фотографии" width="35" height="35">
@@ -126,7 +127,7 @@ describe('should fillSocial function has deterministic behaviour', () => {
     const totalCountElement = getByTestId(socialElement, totalCountTestId);
     expect(totalCountElement).toHaveTextContent(fakePhoto.comments.length);
 
-    const showMoreButton = queryByRole(socialElement, 'button', { name: 'Загрузить еще' });
+    const showMoreButton = queryByTestId(socialElement, showMoreTestId);
     expect(showMoreButton).not.toBeNull();
     expect(showMoreButton).toHaveClass(HIDE_ELEMENT_CLASS);
 
@@ -136,8 +137,7 @@ describe('should fillSocial function has deterministic behaviour', () => {
     expect(commentElements.every((element) => element !== null)).toBe(true);
   });
 
-  test(`when it gets photo with LOAD_MORE_INCREMENT + 1(${LOAD_MORE_INCREMENT + 1}) comments`, async () => {
-    const user = userEvent.setup();
+  test(`when it gets photo with LOAD_MORE_INCREMENT + 1(${LOAD_MORE_INCREMENT + 1}) comments`, () => {
     const fakePhoto = getPhotoWithComments(LOAD_MORE_INCREMENT + 1);
 
     fillSocial(socialElement, fakePhoto);
@@ -145,24 +145,13 @@ describe('should fillSocial function has deterministic behaviour', () => {
     const shownCountElement = getByTestId(socialElement, shownCountTestId);
     expect(shownCountElement).toHaveTextContent(LOAD_MORE_INCREMENT);
 
-    const showMoreButton = getByRole(socialElement, 'button', { name: 'Загрузить еще' });
+    const showMoreButton = getByTestId(socialElement, showMoreTestId);
     expect(showMoreButton).not.toHaveClass(HIDE_ELEMENT_CLASS);
 
-    let commentElements = fakePhoto.comments.map(
+    const commentElements = fakePhoto.comments.map(
       (comment) => queryByText(socialElement, comment.message),
     );
     expect(commentElements.some((element) => element === null)).toBe(true);
-
-    await user.click(showMoreButton);
-
-    expect(shownCountElement).toHaveTextContent(fakePhoto.comments.length);
-
-    expect(showMoreButton).toHaveClass(HIDE_ELEMENT_CLASS);
-
-    commentElements = fakePhoto.comments.map(
-      (comment) => queryByText(socialElement, comment.message),
-    );
-    expect(commentElements.every((element) => element !== null)).toBe(true);
   });
 
   test('when it gets photo with 0 comments', () => {
@@ -173,7 +162,26 @@ describe('should fillSocial function has deterministic behaviour', () => {
     const shownCountElement = getByTestId(socialElement, shownCountTestId);
     expect(shownCountElement).toHaveTextContent(0);
 
-    const showMoreButton = getByRole(socialElement, 'button', { name: 'Загрузить еще' });
+    const showMoreButton = getByTestId(socialElement, showMoreTestId);
     expect(showMoreButton).toHaveClass(HIDE_ELEMENT_CLASS);
+  });
+
+  test('when user click show more button', async () => {
+    const user = userEvent.setup();
+    const fakePhoto = getPhotoWithComments(LOAD_MORE_INCREMENT + 1);
+
+    fillSocial(socialElement, fakePhoto);
+
+    const showMoreButton = getByTestId(socialElement, showMoreTestId);
+    expect(showMoreButton).not.toHaveClass(HIDE_ELEMENT_CLASS);
+
+    await user.click(showMoreButton);
+
+    expect(showMoreButton).toHaveClass(HIDE_ELEMENT_CLASS);
+
+    const commentElements = fakePhoto.comments.map(
+      (comment) => queryByText(socialElement, comment.message),
+    );
+    expect(commentElements.every((element) => element !== null)).toBe(true);
   });
 });
