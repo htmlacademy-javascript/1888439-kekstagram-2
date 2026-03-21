@@ -1,7 +1,8 @@
-import { queryAllByText, queryByAltText, queryByText } from '@testing-library/dom';
+import { getByTestId, queryByAltText, queryByText } from '@testing-library/dom';
+import userEvent from '@testing-library/user-event';
 import { afterEach, beforeEach, describe, expect, test } from 'vitest';
 import { createFragmentWithComments, fillComment, fillSocial } from '../../../js/components/social.js';
-import { MIN_FAKE_COMMENT_ID, MIN_FAKE_PHOTO_ID } from '../../../js/constants.js';
+import { HIDE_ELEMENT_CLASS, LOAD_MORE_INCREMENT, MIN_FAKE_COMMENT_ID, MIN_FAKE_PHOTO_ID } from '../../../js/constants.js';
 import { generateFakeComment, generateFakePost } from '../../../js/fake-data.js';
 
 const createCommentTemplate = () => {
@@ -59,8 +60,25 @@ describe('should createFragmentWithComments function has deterministic behaviour
   });
 });
 
-describe('should fillSocial function fill root of social element with given photo data', () => {
+describe('should fillSocial function has deterministic behaviour', () => {
+  const shownCountTestId = 'shown-count';
+  const totalCountTestId = 'total-count';
+  const showMoreTestId = 'show-more';
   let socialElement;
+
+  const getPhotoWithComments = (commentsCount) => {
+    const fakePhoto = generateFakePost(MIN_FAKE_PHOTO_ID);
+    fakePhoto.comments = Array.from(
+      { length: commentsCount },
+      (_, idx) => {
+        const newComment = generateFakeComment(idx + MIN_FAKE_COMMENT_ID);
+        newComment.message = `Message ${idx + 1}`;
+        return newComment;
+      }
+    );
+
+    return fakePhoto;
+  };
 
   beforeEach(() => {
     socialElement = document.createElement('div');
@@ -72,11 +90,11 @@ describe('should fillSocial function fill root of social element with given phot
         <p class="social__likes">Нравится <span class="likes-count">356</span></p>
       </div>
 
-      <div class="social__comment-count"><span class="social__comment-shown-count">5</span> из <span class="social__comment-total-count">125</span> комментариев</div>
+      <div class="social__comment-count"><span class="social__comment-shown-count" data-testid="${shownCountTestId}">5</span> из <span class="social__comment-total-count" data-testid="${totalCountTestId}">125</span> комментариев</div>
       <ul class="social__comments">
       </ul>
 
-      <button type="button" class="social__comments-loader  comments-loader">Загрузить еще</button>
+      <button type="button" class="social__comments-loader  comments-loader" data-testid="${showMoreTestId}">Загрузить еще</button>
 
       <div class="social__footer">
         <img class="social__picture" src="img/avatar-6.svg" alt="Аватар комментатора фотографии" width="35" height="35">
@@ -92,27 +110,63 @@ describe('should fillSocial function fill root of social element with given phot
     document.body.innerHTML = '';
   });
 
-  test('when it gets data', () => {
-    const fakePhoto = generateFakePost(MIN_FAKE_PHOTO_ID);
-    fakePhoto.comments = Array.from(
-      { length: 3 },
-      (_, idx) => {
-        const newComment = generateFakeComment(idx + MIN_FAKE_COMMENT_ID);
-        newComment.message = `Message ${idx + 1}`;
-        return newComment;
-      }
-    );
+  test(`when it gets photo with LOAD_MORE_INCREMENT(${LOAD_MORE_INCREMENT}) comments`, () => {
+    const fakePhoto = getPhotoWithComments(LOAD_MORE_INCREMENT);
+    const shownCountElement = getByTestId(socialElement, shownCountTestId);
+    const totalCountElement = getByTestId(socialElement, totalCountTestId);
+    const showMoreButton = getByTestId(socialElement, showMoreTestId);
 
     fillSocial(socialElement, fakePhoto);
 
-    const descriptionElement = queryByText(socialElement, fakePhoto.description);
-    expect(descriptionElement).not.toBeNull();
+    expect(queryByText(socialElement, fakePhoto.description)).not.toBeNull();
+    expect(queryByText(socialElement, fakePhoto.likes)).not.toBeNull();
+    expect(shownCountElement).toHaveTextContent(LOAD_MORE_INCREMENT);
+    expect(totalCountElement).toHaveTextContent(fakePhoto.comments.length);
+    expect(showMoreButton).toHaveClass(HIDE_ELEMENT_CLASS);
 
-    const likesElement = queryByText(socialElement, fakePhoto.likes);
-    expect(likesElement).not.toBeNull();
+    const commentElements = fakePhoto.comments.map(
+      (comment) => queryByText(socialElement, comment.message),
+    );
+    expect(commentElements.every((element) => element !== null)).toBe(true);
+  });
 
-    const commentsCountElement = queryAllByText(socialElement, fakePhoto.comments.length);
-    expect(commentsCountElement.length).toBe(2);
+  test(`when it gets photo with LOAD_MORE_INCREMENT + 1(${LOAD_MORE_INCREMENT + 1}) comments`, () => {
+    const fakePhoto = getPhotoWithComments(LOAD_MORE_INCREMENT + 1);
+    const shownCountElement = getByTestId(socialElement, shownCountTestId);
+    const showMoreButton = getByTestId(socialElement, showMoreTestId);
+
+    fillSocial(socialElement, fakePhoto);
+
+    expect(shownCountElement).toHaveTextContent(LOAD_MORE_INCREMENT);
+    expect(showMoreButton).not.toHaveClass(HIDE_ELEMENT_CLASS);
+
+    const commentElements = fakePhoto.comments.map(
+      (comment) => queryByText(socialElement, comment.message),
+    );
+    expect(commentElements.some((element) => element === null)).toBe(true);
+  });
+
+  test('when it gets photo with 0 comments', () => {
+    const fakePhoto = getPhotoWithComments(0);
+    const showMoreButton = getByTestId(socialElement, showMoreTestId);
+
+    fillSocial(socialElement, fakePhoto);
+
+    expect(showMoreButton).toHaveClass(HIDE_ELEMENT_CLASS);
+  });
+
+  test('when user click show more button', async () => {
+    const user = userEvent.setup();
+    const fakePhoto = getPhotoWithComments(LOAD_MORE_INCREMENT + 1);
+    const showMoreButton = getByTestId(socialElement, showMoreTestId);
+
+    fillSocial(socialElement, fakePhoto);
+
+    expect(showMoreButton).not.toHaveClass(HIDE_ELEMENT_CLASS);
+
+    await user.click(showMoreButton);
+
+    expect(showMoreButton).toHaveClass(HIDE_ELEMENT_CLASS);
 
     const commentElements = fakePhoto.comments.map(
       (comment) => queryByText(socialElement, comment.message),

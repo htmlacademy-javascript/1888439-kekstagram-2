@@ -7,6 +7,7 @@ import { HIDE_ELEMENT_CLASS, MIN_FAKE_PHOTO_ID, MODAL_OPEN_CLASS } from '../../.
 import { generateFakePost } from '../../../js/fake-data.js';
 
 const photoViewTestId = 'big-picture';
+const closePhotoViewTestId = 'close-photo-view';
 const getPictureSectionHtml = (hidden) => `
   <section class="big-picture overlay ${hidden ? HIDE_ELEMENT_CLASS : ''}" data-testid="${photoViewTestId}">
     <h2 class="big-picture__title  visually-hidden">Просмотр фотографии</h2>
@@ -14,7 +15,7 @@ const getPictureSectionHtml = (hidden) => `
       <div class="big-picture__img">
         <img src="img/logo-background-3.jpg" alt="Девушка в купальнике" width="600" height="600">
       </div>
-      <button type="reset" class="big-picture__cancel  cancel" id="picture-cancel">Закрыть</button>
+      <button type="reset" class="big-picture__cancel  cancel" id="picture-cancel" data-testid="${closePhotoViewTestId}">Закрыть</button>
     </div>
   </section>
 `;
@@ -44,7 +45,7 @@ describe('should be correct DOM changes', () => {
   test('when photo view modal is opens', () => {
     document.body.innerHTML = getPictureSectionHtml(true);
     const fakePhoto = generateFakePost(MIN_FAKE_PHOTO_ID);
-    const closeButton = screen.getByRole('button', { value: 'Закрыть' });
+    const closeButton = screen.getByTestId(closePhotoViewTestId);
     vi.spyOn(closeButton, 'addEventListener').mockImplementationOnce();
 
     openPhotoViewer(fakePhoto);
@@ -64,7 +65,7 @@ describe('should be correct DOM changes', () => {
   test('when photo view modal is closes', () => {
     document.body.classList.add(MODAL_OPEN_CLASS);
     document.body.innerHTML = getPictureSectionHtml(false);
-    const closeButton = screen.getByRole('button', { value: 'Закрыть' });
+    const closeButton = screen.getByTestId(closePhotoViewTestId);
     vi.spyOn(closeButton, 'removeEventListener').mockImplementationOnce();
 
     closePhotoViewer();
@@ -102,7 +103,7 @@ describe('should closing events be handled correctly', () => {
 
   test('when user click the close button', async () => {
     const user = userEvent.setup();
-    const closeButtonEl = screen.getByRole('button', { value: 'Закрыть' });
+    const closeButtonEl = screen.getByTestId(closePhotoViewTestId);
 
     await user.click(closeButtonEl);
 

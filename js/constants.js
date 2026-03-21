@@ -1,6 +1,8 @@
 export const HIDE_ELEMENT_CLASS = 'hidden';
 export const MODAL_OPEN_CLASS = 'modal-open';
 
+export const LOAD_MORE_INCREMENT = 5;
+
 export const FAKE_PHOTOS_COUNT = 25;
 export const MIN_FAKE_PHOTO_ID = 1;
 export const FAKE_AVATARS_COUNT = 6;
