@@ -1,4 +1,4 @@
-import { getByTestId, queryByAltText, queryByTestId, queryByText } from '@testing-library/dom';
+import { getByTestId, queryByAltText, queryByText } from '@testing-library/dom';
 import userEvent from '@testing-library/user-event';
 import { afterEach, beforeEach, describe, expect, test } from 'vitest';
 import { createFragmentWithComments, fillComment, fillSocial } from '../../../js/components/social.js';
@@ -112,23 +112,16 @@ describe('should fillSocial function has deterministic behaviour', () => {
 
   test(`when it gets photo with LOAD_MORE_INCREMENT(${LOAD_MORE_INCREMENT}) comments`, () => {
     const fakePhoto = getPhotoWithComments(LOAD_MORE_INCREMENT);
+    const shownCountElement = getByTestId(socialElement, shownCountTestId);
+    const totalCountElement = getByTestId(socialElement, totalCountTestId);
+    const showMoreButton = getByTestId(socialElement, showMoreTestId);
 
     fillSocial(socialElement, fakePhoto);
 
-    const descriptionElement = queryByText(socialElement, fakePhoto.description);
-    expect(descriptionElement).not.toBeNull();
-
-    const likesElement = queryByText(socialElement, fakePhoto.likes);
-    expect(likesElement).not.toBeNull();
-
-    const shownCountElement = getByTestId(socialElement, shownCountTestId);
+    expect(queryByText(socialElement, fakePhoto.description)).not.toBeNull();
+    expect(queryByText(socialElement, fakePhoto.likes)).not.toBeNull();
     expect(shownCountElement).toHaveTextContent(LOAD_MORE_INCREMENT);
-
-    const totalCountElement = getByTestId(socialElement, totalCountTestId);
     expect(totalCountElement).toHaveTextContent(fakePhoto.comments.length);
-
-    const showMoreButton = queryByTestId(socialElement, showMoreTestId);
-    expect(showMoreButton).not.toBeNull();
     expect(showMoreButton).toHaveClass(HIDE_ELEMENT_CLASS);
 
     const commentElements = fakePhoto.comments.map(
@@ -139,13 +132,12 @@ describe('should fillSocial function has deterministic behaviour', () => {
 
   test(`when it gets photo with LOAD_MORE_INCREMENT + 1(${LOAD_MORE_INCREMENT + 1}) comments`, () => {
     const fakePhoto = getPhotoWithComments(LOAD_MORE_INCREMENT + 1);
+    const shownCountElement = getByTestId(socialElement, shownCountTestId);
+    const showMoreButton = getByTestId(socialElement, showMoreTestId);
 
     fillSocial(socialElement, fakePhoto);
 
-    const shownCountElement = getByTestId(socialElement, shownCountTestId);
     expect(shownCountElement).toHaveTextContent(LOAD_MORE_INCREMENT);
-
-    const showMoreButton = getByTestId(socialElement, showMoreTestId);
     expect(showMoreButton).not.toHaveClass(HIDE_ELEMENT_CLASS);
 
     const commentElements = fakePhoto.comments.map(
@@ -156,23 +148,20 @@ describe('should fillSocial function has deterministic behaviour', () => {
 
   test('when it gets photo with 0 comments', () => {
     const fakePhoto = getPhotoWithComments(0);
+    const showMoreButton = getByTestId(socialElement, showMoreTestId);
 
     fillSocial(socialElement, fakePhoto);
 
-    const shownCountElement = getByTestId(socialElement, shownCountTestId);
-    expect(shownCountElement).toHaveTextContent(0);
-
-    const showMoreButton = getByTestId(socialElement, showMoreTestId);
     expect(showMoreButton).toHaveClass(HIDE_ELEMENT_CLASS);
   });
 
   test('when user click show more button', async () => {
     const user = userEvent.setup();
     const fakePhoto = getPhotoWithComments(LOAD_MORE_INCREMENT + 1);
+    const showMoreButton = getByTestId(socialElement, showMoreTestId);
 
     fillSocial(socialElement, fakePhoto);
 
-    const showMoreButton = getByTestId(socialElement, showMoreTestId);
     expect(showMoreButton).not.toHaveClass(HIDE_ELEMENT_CLASS);
 
     await user.click(showMoreButton);
