@@ -125,3 +125,22 @@ export const capitalize = (str) => {
 
   return `${str[0].toUpperCase()}${str.slice(1)}`;
 };
+
+/**
+ * Intercepts Escape key inside text fields
+ *
+ * @param {KeyboardEvent} evt
+ */
+export const interceptEscInsideInput = (evt) => {
+  if (evt.code !== 'Escape') {
+    return;
+  }
+
+  const isTextInput =
+    evt.target instanceof HTMLInputElement && evt.target.type === 'text'
+    || evt.target instanceof HTMLTextAreaElement;
+
+  if (isTextInput) {
+    evt.stopPropagation();
+  }
+};

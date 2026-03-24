@@ -9,7 +9,7 @@ import {
   PhotoFilter
 } from '../constants.js';
 import { getElement } from '../element-cache.js';
-import { capitalize, trimAndSplit } from '../utils.js';
+import { capitalize, interceptEscInsideInput, trimAndSplit } from '../utils.js';
 
 let validator = null;
 
@@ -61,24 +61,6 @@ const handleFormSubmit = (evt) => {
 
 /**
  *
- * @param {KeyboardEvent} evt
- */
-const handleEscInsideInput = (evt) => {
-  if (evt.code !== 'Escape') {
-    return;
-  }
-
-  const isTextInput =
-    evt.target instanceof HTMLInputElement && evt.target.type === 'text'
-    || evt.target instanceof HTMLTextAreaElement;
-
-  if (isTextInput) {
-    evt.stopPropagation();
-  }
-};
-
-/**
- *
  * @param {ChangeEvent} evt
  */
 const handleChangeFilter = (evt) => {
@@ -122,7 +104,7 @@ export const openPhotoForm = () => {
 
   formFiltersElement.addEventListener('change', handleChangeFilter);
   closeFormButton.addEventListener('click', handleCloseClick);
-  uploadFormElement.addEventListener('keydown', handleEscInsideInput);
+  uploadFormElement.addEventListener('keydown', interceptEscInsideInput);
   uploadFormElement.addEventListener('submit', handleFormSubmit);
   window.addEventListener('keydown', handleEscKeydown);
 
@@ -148,7 +130,7 @@ export const closePhotoForm = () => {
 
   formFiltersElement.removeEventListener('change', handleChangeFilter);
   closeFormButton.removeEventListener('click', handleCloseClick);
-  uploadFormElement.removeEventListener('keydown', handleEscInsideInput);
+  uploadFormElement.removeEventListener('keydown', interceptEscInsideInput);
   uploadFormElement.removeEventListener('submit', handleFormSubmit);
   window.removeEventListener('keydown', handleEscKeydown);
 

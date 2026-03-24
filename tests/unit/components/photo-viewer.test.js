@@ -1,4 +1,4 @@
-import { screen } from '@testing-library/dom';
+import { getByTestId, screen } from '@testing-library/dom';
 import userEvent from '@testing-library/user-event';
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
 import { closePhotoViewer, openPhotoViewer } from '../../../js/components/photo-viewer.js';
@@ -78,7 +78,7 @@ describe('should be correct DOM changes', () => {
   });
 });
 
-describe('should closing events be handled correctly', () => {
+describe('should events be handled correctly', () => {
   beforeEach(() => {
     document.body.innerHTML = getPictureSectionHtml(true);
     const fakePhoto = generateFakePost(MIN_FAKE_PHOTO_ID);
@@ -86,6 +86,7 @@ describe('should closing events be handled correctly', () => {
   });
 
   afterEach(() => {
+    closePhotoViewer();
     document.body.innerHTML = '';
     document.body.className = '';
     vi.restoreAllMocks();
@@ -110,5 +111,19 @@ describe('should closing events be handled correctly', () => {
     const photoViewEl = screen.getByTestId(photoViewTestId);
     expect(photoViewEl).toHaveClass(HIDE_ELEMENT_CLASS);
     expect(document.body).not.toHaveClass(MODAL_OPEN_CLASS);
+  });
+
+  test('when user press Escape inside text input', async () => {
+    const user = userEvent.setup();
+    const photoViewEl = screen.getByTestId(photoViewTestId);
+    const inputTestId = 'input';
+    photoViewEl.insertAdjacentHTML('beforeend', `<input type="text" data-testid="${inputTestId}">`);
+    const inputElement = getByTestId(photoViewEl, inputTestId);
+
+    await user.click(inputElement);
+    await user.keyboard('{Escape}');
+
+    expect(photoViewEl).not.toHaveClass(HIDE_ELEMENT_CLASS);
+    expect(document.body).toHaveClass(MODAL_OPEN_CLASS);
   });
 });

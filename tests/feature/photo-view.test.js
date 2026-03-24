@@ -91,6 +91,12 @@ describe('should photo view component has correct behaviour', () => {
     expect(commentElements.every((comment) => comment !== null)).toBe(true);
     expect(showMoreButton).toHaveClass(HIDE_ELEMENT_CLASS);
 
+    const commentInputEl = screen.getByTestId('add-comment-input');
+    await user.click(commentInputEl);
+    await user.keyboard('{Escape}');
+    expect(photoViewElement).not.toHaveClass(HIDE_ELEMENT_CLASS);
+    expect(document.body).toHaveClass(MODAL_OPEN_CLASS);
+
     const closePhotoViewButton = getByTestId(photoViewElement, 'close-photo-view');
     await user.click(closePhotoViewButton);
     expect(photoViewElement).toHaveClass(HIDE_ELEMENT_CLASS);
