@@ -95,7 +95,7 @@ export const openPhotoForm = () => {
   validator = new Pristine(uploadFormElement, {
     classTo: 'img-upload__field-wrapper',
     errorTextParent: 'img-upload__field-wrapper',
-    errorClass: 'img-upload__field-wrapper--error',
+    errorTextClass: 'img-upload__field-wrapper--error',
   });
 
   hashtagValidators.forEach((hashtagValidator) => {
