@@ -15,7 +15,7 @@ describe('should photo view component has correct behaviour', () => {
   let html = '';
 
   beforeAll(async () => {
-    const pathToTemplate = new NodeURL('./photo-view.template.html', import.meta.url);
+    const pathToTemplate = new NodeURL('./index-page.template.html', import.meta.url);
     html = await readFile(pathToTemplate, { encoding: 'utf-8' });
   });
 

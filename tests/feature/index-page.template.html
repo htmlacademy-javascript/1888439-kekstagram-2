@@ -18,16 +18,16 @@
     <section class="img-upload">
       <div class="img-upload__wrapper">
         <h2 class="img-upload__title  visually-hidden">Загрузка фотографии</h2>
-        <form class="img-upload__form" id="upload-select-image" autocomplete="off">
+        <form class="img-upload__form" id="upload-select-image" autocomplete="off" data-testid="photo-upload-form">
 
           <!-- Изначальное состояние поля для загрузки изображения -->
           <fieldset class="img-upload__start">
-            <input type="file" id="upload-file" class="img-upload__input  visually-hidden" name="filename" required>
+            <input type="file" id="upload-file" class="img-upload__input  visually-hidden" name="filename" required data-testid="photo-upload-input">
             <label for="upload-file" class="img-upload__label  img-upload__control">Загрузить</label>
           </fieldset>
 
           <!-- Форма редактирования изображения -->
-          <div class="img-upload__overlay  hidden">
+          <div class="img-upload__overlay  hidden" data-testid="overlay">
             <div class="img-upload__wrapper">
               <div class="img-upload__preview-container">
 
@@ -40,21 +40,21 @@
 
                 <!-- Предварительный просмотр изображения -->
                 <div class="img-upload__preview">
-                  <img src="img/upload-default-image.jpg" alt="Предварительный просмотр фотографии">
+                  <img src="img/upload-default-image.jpg" alt="Предварительный просмотр фотографии" data-testid="photo-preview">
                 </div>
 
                 <!-- Изменение глубины эффекта, накладываемого на изображение -->
                 <fieldset class="img-upload__effect-level  effect-level">
-                  <input class="effect-level__value" type="number" step="any" name="effect-level" value="">
+                  <input class="effect-level__value" type="number" step="any" name="effect-level" value="" data-testid="effect-level">
                   <div class="effect-level__slider"></div>
                 </fieldset>
 
                 <!-- Кнопка для закрытия формы редактирования изображения -->
-                <button type="reset" class="img-upload__cancel  cancel" id="upload-cancel">Закрыть</button>
+                <button type="reset" class="img-upload__cancel  cancel" id="upload-cancel" data-testid="upload-close-button">Закрыть</button>
               </div>
 
               <!-- Наложение эффекта на изображение -->
-              <fieldset class="img-upload__effects  effects">
+              <fieldset class="img-upload__effects  effects" data-testid="photo-effects">
                 <ul class="effects__list">
                   <li class="effects__item">
                     <input type="radio" class="effects__radio  visually-hidden" name="effect" id="effect-none" value="none" checked>
@@ -102,17 +102,17 @@
               </fieldset>
 
               <!-- Добавление хэштегов и комментария к изображению -->
-              <fieldset class="img-upload__text text">
+              <fieldset class="img-upload__text text" data-testid="photo-upload-text-fieldset">
                 <div class="img-upload__field-wrapper">
-                  <input class="text__hashtags" name="hashtags" placeholder="#ХэшТег">
+                  <input class="text__hashtags" name="hashtags" placeholder="#ХэшТег" data-testid="hashtags-field">
                 </div>
                 <div class="img-upload__field-wrapper">
-                  <textarea class="text__description" name="description" placeholder="Ваш комментарий..."></textarea>
+                  <textarea class="text__description" name="description" placeholder="Ваш комментарий..." maxlength="140" data-testid="photo-upload-comment"></textarea>
                 </div>
               </fieldset>
 
               <!-- Кнопка для отправки данных на сервер -->
-              <button type="submit" class="img-upload__submit" id="upload-submit">Опубликовать</button>
+              <button type="submit" class="img-upload__submit" id="upload-submit" data-testid="photo-upload-submit">Опубликовать</button>
             </div>
           </div>
         </form>

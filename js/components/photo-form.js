@@ -49,6 +49,7 @@ const hashtagValidators = [
 ];
 
 /**
+ * Handles photo upload form submit event
  *
  * @param {SubmitEvent} evt
  */
@@ -60,6 +61,7 @@ const handleFormSubmit = (evt) => {
 };
 
 /**
+ * Handles change photo filter event
  *
  * @param {ChangeEvent} evt
  */
@@ -80,11 +82,17 @@ const handleChangeFilter = (evt) => {
     effectLevelElement.step = filter.Step;
     effectLevelElement.value = mean;
     styles = filter.Template(mean);
+  } else {
+    effectLevelElement.step = 'any';
+    effectLevelElement.value = '';
   }
 
   photoPreviewElement.style.filter = styles;
 };
 
+/**
+ * Opens photo upload form
+ */
 export const openPhotoForm = () => {
   const uploadFormElement = getElement('#upload-select-image');
   const formOverlayElement = getElement('.img-upload__overlay');
@@ -112,6 +120,9 @@ export const openPhotoForm = () => {
   document.body.classList.add(MODAL_OPEN_CLASS);
 };
 
+/**
+ * Closes photo upload form
+ */
 export const closePhotoForm = () => {
   const uploadFormElement = getElement('#upload-select-image');
   const formOverlayElement = getElement('.img-upload__overlay');
@@ -119,11 +130,13 @@ export const closePhotoForm = () => {
   const formFiltersElement = getElement('.img-upload__effects', formOverlayElement);
   const effectLevelElement = getElement('.img-upload__effect-level .effect-level__value');
   const photoPreviewElement = getElement('.img-upload__preview img');
+  const uploadFileInput = getElement('#upload-file');
 
-  validator.destroy();
+  validator?.destroy();
   validator = null;
 
   uploadFormElement.reset();
+  uploadFileInput.value = '';
   effectLevelElement.step = 'any';
   effectLevelElement.value = '';
   photoPreviewElement.style.filter = '';
