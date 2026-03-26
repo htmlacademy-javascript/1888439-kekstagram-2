@@ -23,3 +23,12 @@ export const getElement = (selector, rootEl) => {
 
   return element;
 };
+
+/**
+ * Resets element cache
+ */
+export const resetCache = () => {
+  Object.keys(cache).forEach((key) => {
+    delete cache[key];
+  });
+};
