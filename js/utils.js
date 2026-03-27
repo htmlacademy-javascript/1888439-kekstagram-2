@@ -92,3 +92,55 @@ export const selectOrThrow = (selector, rootEl) => {
 
   return selectedElement;
 };
+
+/**
+ * Trims string and splits by the passed separator
+ * Unlike the standard String.prototype.split method, it does not return an array with an empty string
+ * if there is nothing to split.
+ *
+ * @param {string} str
+ * @param {string | RegExp} separator
+ * @returns {string[]}
+ */
+export const trimAndSplit = (str, separator) => {
+  const subStringsArr = str.trim().split(separator);
+
+  if (subStringsArr.length === 1 && subStringsArr[0] === '') {
+    return [];
+  }
+
+  return subStringsArr;
+};
+
+/**
+ * Capitalizes string
+ *
+ * @param {string} str
+ * @returns {string}
+ */
+export const capitalize = (str) => {
+  if (str.length === 0) {
+    return str;
+  }
+
+  return `${str[0].toUpperCase()}${str.slice(1)}`;
+};
+
+/**
+ * Intercepts Escape key inside text fields
+ *
+ * @param {KeyboardEvent} evt
+ */
+export const interceptEscInsideInput = (evt) => {
+  if (evt.code !== 'Escape') {
+    return;
+  }
+
+  const isTextInput =
+    evt.target instanceof HTMLInputElement && evt.target.type === 'text'
+    || evt.target instanceof HTMLTextAreaElement;
+
+  if (isTextInput) {
+    evt.stopPropagation();
+  }
+};

@@ -1,6 +1,7 @@
-import { queryByText } from '@testing-library/dom';
+import { queryByText, screen } from '@testing-library/dom';
 import { afterAll, afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
-import { createFragmentWith, getRandomInt, keepNumberInRange, parseTime, selectOrThrow } from '../../js/utils.js';
+import { capitalize, createFragmentWith, getRandomInt, interceptEscInsideInput, keepNumberInRange, parseTime, selectOrThrow, trimAndSplit } from '../../js/utils.js';
+import userEvent from '@testing-library/user-event';
 
 describe('should getRandomInt function return the deterministic value', () => {
   beforeEach(() => {
@@ -148,5 +149,72 @@ describe('should selectOrThrow function return selected element or throw error',
 
     expect(() => selectOrThrow(`.another-${className}`))
       .toThrowError(/not found/);
+  });
+});
+
+describe('should trimAndSplit function correct split the string into an array of substrings', () => {
+  test('when it gets generic string', () => {
+    const substrings = ['a', 'b', 'c'];
+    const separator = ' ';
+    const str = substrings.join(separator);
+
+    expect(trimAndSplit(str, separator)).toEqual(substrings);
+    expect(trimAndSplit(`   ${str}\t`, separator)).toEqual(substrings);
+  });
+
+  test('when are the boundary case', () => {
+    expect(trimAndSplit('', ' ')).toEqual([]);
+    expect(trimAndSplit('   \t', ' ')).toEqual([]);
+  });
+});
+
+describe('should capitalize function set the first character of the string to uppercase', () => {
+  test('when it gets generic string', () => {
+    expect(capitalize('hello')).toBe('Hello');
+    expect(capitalize('Hello')).toBe('Hello');
+  });
+
+  test('when are the boundary case', () => {
+    expect(capitalize('')).toBe('');
+  });
+});
+
+describe('should interceptEscInsideInput function intercept Escape keydown event', () => {
+  const containerTestId = 'container';
+  const inputTestId = 'text-input';
+  const textareaTestId = 'textarea-input';
+  const handleKeydown = vi.fn();
+
+  beforeEach(() => {
+    document.body.innerHTML = `
+      <div data-testid="${containerTestId}">
+        <input type="text" data-testid="${inputTestId}">
+        <textarea data-testid="${textareaTestId}"></textarea>
+      </div>
+    `;
+    window.addEventListener('keydown', handleKeydown);
+  });
+
+  afterEach(() => {
+    document.body.innerHTML = '';
+    window.removeEventListener('keydown', handleKeydown);
+    vi.resetAllMocks();
+  });
+
+  test('when user is focused on input', async () => {
+    const user = userEvent.setup();
+    const containerElement = screen.getByTestId(containerTestId);
+    const inputTextElement = screen.getByTestId(inputTestId);
+    const textareaElement = screen.getByTestId(textareaTestId);
+
+    containerElement.addEventListener('keydown', interceptEscInsideInput);
+
+    await user.click(inputTextElement);
+    await user.keyboard('{Escape}');
+    expect(handleKeydown).toBeCalledTimes(0);
+
+    await user.click(textareaElement);
+    await user.keyboard('{Escape}');
+    expect(handleKeydown).toBeCalledTimes(0);
   });
 });

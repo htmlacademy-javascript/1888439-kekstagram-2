@@ -1,4 +1,5 @@
 import { HIDE_ELEMENT_CLASS, MODAL_OPEN_CLASS } from '../constants.js';
+import { interceptEscInsideInput } from '../utils.js';
 import { fillSocial } from './social.js';
 
 /**
@@ -18,6 +19,7 @@ export const openPhotoViewer = (photo) => {
 
   imgEl.src = photo.url;
   imgEl.alt = photo.description;
+  photoViewerEl.addEventListener('keydown', interceptEscInsideInput);
   photoViewerEl.classList.remove(HIDE_ELEMENT_CLASS);
   closeBtn.addEventListener('click', handleCloseClick);
 
@@ -32,13 +34,14 @@ export const closePhotoViewer = () => {
   const photoViewerEl = document.querySelector('.big-picture');
   const closeBtn = photoViewerEl.querySelector('.big-picture__cancel');
 
+
+  photoViewerEl.removeEventListener('keydown', interceptEscInsideInput);
   photoViewerEl.classList.add(HIDE_ELEMENT_CLASS);
   closeBtn.removeEventListener('click', handleCloseClick);
 
   document.body.classList.remove(MODAL_OPEN_CLASS);
   window.removeEventListener('keydown', handleEscKeydown);
 };
-
 
 /**
  * Handles escape keydown event when photo viewer is open

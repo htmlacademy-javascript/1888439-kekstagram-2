@@ -1,4 +1,4 @@
-import { screen } from '@testing-library/dom';
+import { getByTestId, screen } from '@testing-library/dom';
 import userEvent from '@testing-library/user-event';
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
 import { closePhotoViewer, openPhotoViewer } from '../../../js/components/photo-viewer.js';
@@ -8,6 +8,8 @@ import { generateFakePost } from '../../../js/fake-data.js';
 
 const photoViewTestId = 'big-picture';
 const closePhotoViewTestId = 'close-photo-view';
+const inputTestId = 'text-input';
+
 const getPictureSectionHtml = (hidden) => `
   <section class="big-picture overlay ${hidden ? HIDE_ELEMENT_CLASS : ''}" data-testid="${photoViewTestId}">
     <h2 class="big-picture__title  visually-hidden">Просмотр фотографии</h2>
@@ -15,6 +17,7 @@ const getPictureSectionHtml = (hidden) => `
       <div class="big-picture__img">
         <img src="img/logo-background-3.jpg" alt="Девушка в купальнике" width="600" height="600">
       </div>
+      <input type="text" data-testid="${inputTestId}">
       <button type="reset" class="big-picture__cancel  cancel" id="picture-cancel" data-testid="${closePhotoViewTestId}">Закрыть</button>
     </div>
   </section>
@@ -78,7 +81,7 @@ describe('should be correct DOM changes', () => {
   });
 });
 
-describe('should closing events be handled correctly', () => {
+describe('should events be handled correctly', () => {
   beforeEach(() => {
     document.body.innerHTML = getPictureSectionHtml(true);
     const fakePhoto = generateFakePost(MIN_FAKE_PHOTO_ID);
@@ -86,6 +89,7 @@ describe('should closing events be handled correctly', () => {
   });
 
   afterEach(() => {
+    closePhotoViewer();
     document.body.innerHTML = '';
     document.body.className = '';
     vi.restoreAllMocks();
@@ -110,5 +114,17 @@ describe('should closing events be handled correctly', () => {
     const photoViewEl = screen.getByTestId(photoViewTestId);
     expect(photoViewEl).toHaveClass(HIDE_ELEMENT_CLASS);
     expect(document.body).not.toHaveClass(MODAL_OPEN_CLASS);
+  });
+
+  test('when user press Escape inside text input', async () => {
+    const user = userEvent.setup();
+    const photoViewEl = screen.getByTestId(photoViewTestId);
+    const inputElement = getByTestId(photoViewEl, inputTestId);
+
+    await user.click(inputElement);
+    await user.keyboard('{Escape}');
+
+    expect(photoViewEl).not.toHaveClass(HIDE_ELEMENT_CLASS);
+    expect(document.body).toHaveClass(MODAL_OPEN_CLASS);
   });
 });

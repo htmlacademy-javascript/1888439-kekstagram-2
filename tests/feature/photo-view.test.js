@@ -15,7 +15,7 @@ describe('should photo view component has correct behaviour', () => {
   let html = '';
 
   beforeAll(async () => {
-    const pathToTemplate = new NodeURL('./photo-view.template.html', import.meta.url);
+    const pathToTemplate = new NodeURL('./index-page.template.html', import.meta.url);
     html = await readFile(pathToTemplate, { encoding: 'utf-8' });
   });
 
@@ -90,6 +90,12 @@ describe('should photo view component has correct behaviour', () => {
     );
     expect(commentElements.every((comment) => comment !== null)).toBe(true);
     expect(showMoreButton).toHaveClass(HIDE_ELEMENT_CLASS);
+
+    const commentInputEl = screen.getByTestId('add-comment-input');
+    await user.click(commentInputEl);
+    await user.keyboard('{Escape}');
+    expect(photoViewElement).not.toHaveClass(HIDE_ELEMENT_CLASS);
+    expect(document.body).toHaveClass(MODAL_OPEN_CLASS);
 
     const closePhotoViewButton = getByTestId(photoViewElement, 'close-photo-view');
     await user.click(closePhotoViewButton);
