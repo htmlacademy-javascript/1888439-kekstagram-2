@@ -19,6 +19,7 @@ import { getScript } from '../helpers.js';
 describe('should upload photo form component has correct behaviour', () => {
   let html = '';
   let pristineElement = null;
+  const photoFile = new File(['content'], 'photo.jpg', { type: 'image/jpeg' });
 
   beforeAll(async () => {
     const pathToTemplate = new NodeURL('./index-page.template.html', import.meta.url);
@@ -50,9 +51,8 @@ describe('should upload photo form component has correct behaviour', () => {
 
     const uploadInput = screen.getByTestId('photo-upload-input');
     const overlayElement = screen.getByTestId('overlay');
-    const file = new File(['content'], 'photo.jpg', { type: 'image/jpeg' });
 
-    await user.upload(uploadInput, file);
+    await user.upload(uploadInput, photoFile);
     expect(overlayElement).not.toHaveClass(HIDE_ELEMENT_CLASS);
     expect(document.body).toHaveClass(MODAL_OPEN_CLASS);
 
@@ -87,22 +87,21 @@ describe('should upload photo form component has correct behaviour', () => {
 
     const textFieldset = screen.getByTestId('photo-upload-text-fieldset');
     const validHashtag = '#HashTag';
-    await user.type(hashtagsInputElement, validHashtag);
+    const tooManyHashtags = `${validHashtag} `.repeat(HASHTAG_MAX_COUNT + 1);
+    const duplicateHashtag = validHashtag.toLowerCase();
+    const tooLongHashtag = `#${'a'.repeat(HASHTAG_MAX_LENGTH)}`;
+    const invalidCharsHashtag = `${validHashtag};`;
+    await user.clear(hashtagsInputElement);
+    await user.type(hashtagsInputElement, `${tooManyHashtags} ${duplicateHashtag} ${tooLongHashtag} ${invalidCharsHashtag}`);
     Object.values(HashtagErrorMessage).forEach((message) => {
-      expect(queryByText(textFieldset, message)).not.toBeInTheDocument();
-    });
-
-    const invalidHashtagStr = `${validHashtag} ${validHashtag.toLowerCase()} ${validHashtag}; ${`${validHashtag} `.repeat(HASHTAG_MAX_COUNT - 3 + 1)}`;
-    await user.type(hashtagsInputElement, invalidHashtagStr);
-    [
-      HashtagErrorMessage.AllowedChars,
-      HashtagErrorMessage.MaxCount,
-      HashtagErrorMessage.Duplications,
-    ].forEach((message) => {
       expect(queryByText(textFieldset, (text) => text.includes(message))).toBeInTheDocument();
     });
-    await user.type(hashtagsInputElement, `#${'a'.repeat(HASHTAG_MAX_LENGTH)}`);
-    expect(queryByText(textFieldset, (text) => text.includes(HashtagErrorMessage.MaxLength))).toBeInTheDocument();
+
+    await user.clear(hashtagsInputElement);
+    await user.type(hashtagsInputElement, validHashtag);
+    Object.values(HashtagErrorMessage).forEach((message) => {
+      expect(queryByText(textFieldset, (text) => text.includes(message))).not.toBeInTheDocument();
+    });
 
     const commentInputElement = screen.getByTestId('photo-upload-comment');
     await user.click(commentInputElement);
@@ -113,8 +112,50 @@ describe('should upload photo form component has correct behaviour', () => {
     const validComment = 'a'.repeat(USER_COMMENT_MAX_LENGTH);
     await user.type(commentInputElement, validComment);
     expect(commentInputElement).toHaveValue(validComment);
+    await user.clear(commentInputElement);
     await user.type(commentInputElement, `${validComment}b`);
     expect(commentInputElement.value).toHaveLength(USER_COMMENT_MAX_LENGTH);
+    expect(commentInputElement).toHaveValue(validComment);
+
+    const submitButton = screen.getByTestId('photo-upload-submit');
+    await user.click(submitButton);
+    expect(HTMLFormElement.prototype.submit).toBeCalled();
+  }, { timeout: 10_000 });
+
+  test('when user opens and closes form', async () => {
+    const user = userEvent.setup();
+
+    const uploadInput = screen.getByTestId('photo-upload-input');
+    const overlayElement = screen.getByTestId('overlay');
+
+    await user.upload(uploadInput, photoFile);
+    expect(overlayElement).not.toHaveClass(HIDE_ELEMENT_CLASS);
+    expect(document.body).toHaveClass(MODAL_OPEN_CLASS);
+
+    const effectsContainerElement = screen.getByTestId('photo-effects');
+    const effectLevelElement = screen.getByTestId('effect-level');
+    const photoPreviewElement = screen.getByTestId('photo-preview');
+    const effectElements = getAllByRole(effectsContainerElement, 'radio');
+    const effectsWithoutNone = effectElements.filter((element) => element.value !== 'none');
+    const randomEffectIdx = getRandomInt(0, effectsWithoutNone.length);
+    const randomEffect = effectsWithoutNone[randomEffectIdx];
+
+    await user.click(randomEffect);
+    expect(effectLevelElement).toHaveValue();
+    expect(effectLevelElement).not.toHaveAttribute('step', 'any');
+    expect(photoPreviewElement.style.filter).not.toBe('');
+
+    const hashtagsInputElement = screen.getByTestId('hashtags-field');
+    const textFieldset = screen.getByTestId('photo-upload-text-fieldset');
+    const validHashtag = '#HashTag';
+    await user.type(hashtagsInputElement, validHashtag);
+    Object.values(HashtagErrorMessage).forEach((message) => {
+      expect(queryByText(textFieldset, (text) => text.includes(message))).not.toBeInTheDocument();
+    });
+
+    const commentInputElement = screen.getByTestId('photo-upload-comment');
+    const validComment = 'a'.repeat(USER_COMMENT_MAX_LENGTH);
+    await user.type(commentInputElement, validComment);
     expect(commentInputElement).toHaveValue(validComment);
 
     const closeButton = screen.getByTestId('upload-close-button');
@@ -122,20 +163,17 @@ describe('should upload photo form component has correct behaviour', () => {
     expect(overlayElement).toHaveClass(HIDE_ELEMENT_CLASS);
     expect(document.body).not.toHaveClass(MODAL_OPEN_CLASS);
 
-    await user.upload(uploadInput, file);
+    await user.upload(uploadInput, photoFile);
     expect(overlayElement).not.toHaveClass(HIDE_ELEMENT_CLASS);
     expect(document.body).toHaveClass(MODAL_OPEN_CLASS);
+    const noneEffect = effectElements.find((element) => element.value === 'none');
     expect(noneEffect).toBeChecked();
     expect(effectLevelElement).not.toHaveValue();
     expect(effectLevelElement).toHaveAttribute('step', 'any');
     expect(hashtagsInputElement).not.toHaveValue();
     expect(commentInputElement).not.toHaveValue();
     Object.values(HashtagErrorMessage).forEach((message) => {
-      expect(queryByText(textFieldset, message)).not.toBeInTheDocument();
+      expect(queryByText(textFieldset, (text) => text.includes(message))).not.toBeInTheDocument();
     });
-
-    const submitButton = screen.getByTestId('photo-upload-submit');
-    await user.click(submitButton);
-    expect(HTMLFormElement.prototype.submit).toBeCalled();
   });
-}, { timeout: 10_000 });
+});

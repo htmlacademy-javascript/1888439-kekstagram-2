@@ -8,6 +8,8 @@ import { generateFakePost } from '../../../js/fake-data.js';
 
 const photoViewTestId = 'big-picture';
 const closePhotoViewTestId = 'close-photo-view';
+const inputTestId = 'text-input';
+
 const getPictureSectionHtml = (hidden) => `
   <section class="big-picture overlay ${hidden ? HIDE_ELEMENT_CLASS : ''}" data-testid="${photoViewTestId}">
     <h2 class="big-picture__title  visually-hidden">Просмотр фотографии</h2>
@@ -15,6 +17,7 @@ const getPictureSectionHtml = (hidden) => `
       <div class="big-picture__img">
         <img src="img/logo-background-3.jpg" alt="Девушка в купальнике" width="600" height="600">
       </div>
+      <input type="text" data-testid="${inputTestId}">
       <button type="reset" class="big-picture__cancel  cancel" id="picture-cancel" data-testid="${closePhotoViewTestId}">Закрыть</button>
     </div>
   </section>
@@ -116,8 +119,6 @@ describe('should events be handled correctly', () => {
   test('when user press Escape inside text input', async () => {
     const user = userEvent.setup();
     const photoViewEl = screen.getByTestId(photoViewTestId);
-    const inputTestId = 'input';
-    photoViewEl.insertAdjacentHTML('beforeend', `<input type="text" data-testid="${inputTestId}">`);
     const inputElement = getByTestId(photoViewEl, inputTestId);
 
     await user.click(inputElement);
