@@ -55,39 +55,70 @@ const hashtagValidators = [
  */
 const handleFormSubmit = (evt) => {
   evt.preventDefault();
+
   if (validator.validate()) {
     evt.target.submit();
   }
 };
 
+
+/** @typedef {typeof import('../constants.js').PhotoFilter} PhotoFilter */
+/**
+ * Handles photo filters slider update
+ *
+ * @param {number} state
+ * @param {PhotoFilter[keyof PhotoFilter]} filter
+ */
+const handleSliderUpdate = (state, filter) => {
+  const photoPreviewElement = getElement('.img-upload__preview img');
+  const effectLevelElement = getElement('.img-upload__effect-level .effect-level__value');
+
+  effectLevelElement.value = state;
+  photoPreviewElement.style.filter = filter.Template(state);
+};
+
 /**
  * Handles change photo filter event
  *
- * @param {ChangeEvent} evt
+ * @param {InputEvent} evt
  */
-const handleChangeFilter = (evt) => {
-  const target = evt.target;
-
+const handleChangeFilter = ({ target }) => {
   if (!(target instanceof HTMLInputElement && target.type === 'radio')) {
     return;
   }
 
   const effectLevelElement = getElement('.img-upload__effect-level .effect-level__value');
   const photoPreviewElement = getElement('.img-upload__preview img');
-  let styles = '';
+  const sliderElement = getElement('.img-upload__effect-level .effect-level__slider');
+  const effectLevelFieldset = getElement('.img-upload__effect-level');
   const filter = PhotoFilter[capitalize(target.value)];
 
-  if (filter) {
-    const mean = (filter.Min + filter.Max) / 2;
-    effectLevelElement.step = filter.Step;
-    effectLevelElement.value = mean;
-    styles = filter.Template(mean);
-  } else {
+  sliderElement?.noUiSlider?.destroy();
+
+  if (!filter) {
+    effectLevelFieldset.classList.add(HIDE_ELEMENT_CLASS);
     effectLevelElement.step = 'any';
     effectLevelElement.value = '';
+    photoPreviewElement.style.filter = '';
+    return;
   }
 
-  photoPreviewElement.style.filter = styles;
+  effectLevelFieldset.classList.remove(HIDE_ELEMENT_CLASS);
+  effectLevelElement.step = filter.Step;
+
+  noUiSlider.create(sliderElement, {
+    start: filter.Max,
+    range: {
+      min: filter.Min,
+      max: filter.Max,
+    },
+    step: filter.Step,
+  });
+
+  sliderElement.noUiSlider.on(
+    'update',
+    (state) => handleSliderUpdate(state, filter)
+  );
 };
 
 /**
@@ -128,18 +159,21 @@ export const closePhotoForm = () => {
   const formOverlayElement = getElement('.img-upload__overlay');
   const closeFormButton = getElement('.img-upload__cancel', formOverlayElement);
   const formFiltersElement = getElement('.img-upload__effects', formOverlayElement);
-  const effectLevelElement = getElement('.img-upload__effect-level .effect-level__value');
+  const effectLevelFieldset = getElement('.img-upload__effect-level');
+  const effectLevelInput = getElement('.img-upload__effect-level .effect-level__value');
   const photoPreviewElement = getElement('.img-upload__preview img');
   const uploadFileInput = getElement('#upload-file');
+  const sliderElement = getElement('.img-upload__effect-level .effect-level__slider');
 
   validator?.destroy();
   validator = null;
 
   uploadFormElement.reset();
   uploadFileInput.value = '';
-  effectLevelElement.step = 'any';
-  effectLevelElement.value = '';
+  effectLevelInput.step = 'any';
+  effectLevelInput.value = '';
   photoPreviewElement.style.filter = '';
+  sliderElement?.noUiSlider?.destroy();
 
   formFiltersElement.removeEventListener('change', handleChangeFilter);
   closeFormButton.removeEventListener('click', handleCloseClick);
@@ -147,6 +181,7 @@ export const closePhotoForm = () => {
   uploadFormElement.removeEventListener('submit', handleFormSubmit);
   window.removeEventListener('keydown', handleEscKeydown);
 
+  effectLevelFieldset.classList.add(HIDE_ELEMENT_CLASS);
   formOverlayElement.classList.add(HIDE_ELEMENT_CLASS);
   document.body.classList.remove(MODAL_OPEN_CLASS);
 };
@@ -176,7 +211,7 @@ function handleEscKeydown(evt) {
  * Handle change event on input[type='file'] element
  * and opens form for uploading image
  *
- * @param {ChangeEvent} evt
+ * @param {InputEvent} evt
  */
 export const handleUploadImgInput = (evt) => {
   evt.preventDefault();
