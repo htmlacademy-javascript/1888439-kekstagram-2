@@ -5,8 +5,10 @@ import {
   HASHTAG_SEPARATOR,
   HashtagErrorMessage,
   HIDE_ELEMENT_CLASS,
+  MIN_SCALE_PERCENT,
   MODAL_OPEN_CLASS,
-  PhotoFilter
+  PhotoFilter,
+  SCALE_PERCENT_INCREMENT
 } from '../constants.js';
 import { getElement } from '../element-cache.js';
 import { capitalize, interceptEscInsideInput, trimAndSplit } from '../utils.js';
@@ -122,6 +124,21 @@ const handleChangeFilter = ({ target }) => {
 };
 
 /**
+ * @param {MouseEvent} evt
+ */
+const handleScaleChange = (evt) => {
+  if (!(evt.target instanceof HTMLButtonElement)) {
+    return;
+  }
+
+  const isIncrease = evt.target.classList.contains('scale__control--bigger');
+  const scaleInput = getElement('.scale__control--value', evt.currentTarget);
+  const currentScale = parseInt(scaleInput.value, 10);
+  const changedScale = currentScale + (isIncrease ? SCALE_PERCENT_INCREMENT : -SCALE_PERCENT_INCREMENT);
+  scaleInput.value = `${Math.max(MIN_SCALE_PERCENT, Math.min(changedScale, 100))}%`;
+};
+
+/**
  * Opens photo upload form
  */
 export const openPhotoForm = () => {
@@ -130,6 +147,7 @@ export const openPhotoForm = () => {
   const formFiltersElement = getElement('.img-upload__effects', formOverlayElement);
   const hashtagsFieldElement = getElement('.text__hashtags', formOverlayElement);
   const closeFormButton = getElement('.img-upload__cancel', formOverlayElement);
+  const scaleFieldElement = getElement('.img-upload__scale', formOverlayElement);
 
   validator = new Pristine(uploadFormElement, {
     classTo: 'img-upload__field-wrapper',
@@ -145,6 +163,7 @@ export const openPhotoForm = () => {
   closeFormButton.addEventListener('click', handleCloseClick);
   uploadFormElement.addEventListener('keydown', interceptEscInsideInput);
   uploadFormElement.addEventListener('submit', handleFormSubmit);
+  scaleFieldElement.addEventListener('click', handleScaleChange);
   window.addEventListener('keydown', handleEscKeydown);
 
   formOverlayElement.classList.remove(HIDE_ELEMENT_CLASS);
@@ -164,6 +183,8 @@ export const closePhotoForm = () => {
   const photoPreviewElement = getElement('.img-upload__preview img');
   const uploadFileInput = getElement('#upload-file');
   const sliderElement = getElement('.img-upload__effect-level .effect-level__slider');
+  const scaleFieldElement = getElement('.img-upload__scale', formOverlayElement);
+  const scaleInput = getElement('.scale__control--value', scaleFieldElement);
 
   validator?.destroy();
   validator = null;
@@ -173,12 +194,14 @@ export const closePhotoForm = () => {
   effectLevelInput.step = 'any';
   effectLevelInput.value = '';
   photoPreviewElement.style.filter = '';
+  scaleInput.value = '100%';
   sliderElement?.noUiSlider?.destroy();
 
   formFiltersElement.removeEventListener('change', handleChangeFilter);
   closeFormButton.removeEventListener('click', handleCloseClick);
   uploadFormElement.removeEventListener('keydown', interceptEscInsideInput);
   uploadFormElement.removeEventListener('submit', handleFormSubmit);
+  scaleFieldElement.removeEventListener('click', handleScaleChange);
   window.removeEventListener('keydown', handleEscKeydown);
 
   effectLevelFieldset.classList.add(HIDE_ELEMENT_CLASS);

@@ -11,6 +11,7 @@ import {
   HIDE_ELEMENT_CLASS,
   MODAL_OPEN_CLASS,
   PhotoFilter,
+  SCALE_PERCENT_INCREMENT,
   USER_COMMENT_MAX_LENGTH
 } from '../../js/constants.js';
 import { resetCache } from '../../js/element-cache.js';
@@ -61,6 +62,17 @@ describe('should upload photo form component has correct behaviour', () => {
     await user.upload(uploadInput, photoFile);
     expect(overlayElement).not.toHaveClass(HIDE_ELEMENT_CLASS);
     expect(document.body).toHaveClass(MODAL_OPEN_CLASS);
+
+    const scaleInput = screen.getByTestId('scale-input');
+    expect(scaleInput).toHaveValue('100%');
+
+    const scaleDecreaseButton = screen.getByTestId('scale-decrease');
+    await user.click(scaleDecreaseButton);
+    expect(scaleInput).toHaveValue(`${100 - SCALE_PERCENT_INCREMENT}%`);
+
+    const scaleIncreaseButton = screen.getByTestId('scale-increase');
+    await user.click(scaleIncreaseButton);
+    expect(scaleInput).toHaveValue('100%');
 
     const effectsContainerElement = screen.getByTestId('photo-effects');
     const effectLevelElement = screen.getByTestId('effect-level');
@@ -139,6 +151,11 @@ describe('should upload photo form component has correct behaviour', () => {
     expect(overlayElement).not.toHaveClass(HIDE_ELEMENT_CLASS);
     expect(document.body).toHaveClass(MODAL_OPEN_CLASS);
 
+    const scaleInput = screen.getByTestId('scale-input');
+    const scaleDecreaseButton = screen.getByTestId('scale-decrease');
+    await user.click(scaleDecreaseButton);
+    expect(scaleInput).toHaveValue(`${100 - SCALE_PERCENT_INCREMENT}%`);
+
     const effectsContainerElement = screen.getByTestId('photo-effects');
     const effectLevelElement = screen.getByTestId('effect-level');
     const photoPreviewElement = screen.getByTestId('photo-preview');
@@ -179,6 +196,7 @@ describe('should upload photo form component has correct behaviour', () => {
     expect(effectLevelElement).toHaveAttribute('step', 'any');
     expect(hashtagsInputElement).not.toHaveValue();
     expect(commentInputElement).not.toHaveValue();
+    expect(scaleInput).toHaveValue('100%');
     Object.values(HashtagErrorMessage).forEach((message) => {
       expect(queryByText(textFieldset, (text) => text.includes(message))).not.toBeInTheDocument();
     });
