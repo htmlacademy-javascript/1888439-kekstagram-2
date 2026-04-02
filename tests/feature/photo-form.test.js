@@ -10,15 +10,18 @@ import {
   HashtagErrorMessage,
   HIDE_ELEMENT_CLASS,
   MODAL_OPEN_CLASS,
+  PhotoFilter,
+  SCALE_PERCENT_INCREMENT,
   USER_COMMENT_MAX_LENGTH
 } from '../../js/constants.js';
 import { resetCache } from '../../js/element-cache.js';
-import { getRandomInt } from '../../js/utils.js';
+import { capitalize, getRandomInt } from '../../js/utils.js';
 import { getScript } from '../helpers.js';
 
 describe('should upload photo form component has correct behaviour', () => {
   let html = '';
   let pristineElement = null;
+  let noUiSliderElement = null;
   const photoFile = new File(['content'], 'photo.jpg', { type: 'image/jpeg' });
 
   beforeAll(async () => {
@@ -26,14 +29,18 @@ describe('should upload photo form component has correct behaviour', () => {
     html = await readFile(pathToTemplate, { encoding: 'utf-8' });
     const pathToPristineSrc = new NodeURL('../../vendor/pristine/pristine.min.js', import.meta.url);
     pristineElement = await getScript(pathToPristineSrc);
+    const pathToNoUiSlider = new NodeURL('../../vendor/nouislider/nouislider.js', import.meta.url);
+    noUiSliderElement = await getScript(pathToNoUiSlider);
   });
 
   beforeEach(() => {
     document.head.append(pristineElement);
+    document.head.append(noUiSliderElement);
     document.body.innerHTML = html;
     const uploadInput = screen.getByTestId('photo-upload-input');
     uploadInput.addEventListener('change', handleUploadImgInput);
     window.Pristine = window.jsdom.window.Pristine;
+    window.noUiSlider = window.jsdom.window.noUiSlider;
   });
 
   afterEach(() => {
@@ -56,6 +63,17 @@ describe('should upload photo form component has correct behaviour', () => {
     expect(overlayElement).not.toHaveClass(HIDE_ELEMENT_CLASS);
     expect(document.body).toHaveClass(MODAL_OPEN_CLASS);
 
+    const scaleInput = screen.getByTestId('scale-input');
+    expect(scaleInput).toHaveValue('100%');
+
+    const scaleDecreaseButton = screen.getByTestId('scale-decrease');
+    await user.click(scaleDecreaseButton);
+    expect(scaleInput).toHaveValue(`${100 - SCALE_PERCENT_INCREMENT}%`);
+
+    const scaleIncreaseButton = screen.getByTestId('scale-increase');
+    await user.click(scaleIncreaseButton);
+    expect(scaleInput).toHaveValue('100%');
+
     const effectsContainerElement = screen.getByTestId('photo-effects');
     const effectLevelElement = screen.getByTestId('effect-level');
     const photoPreviewElement = screen.getByTestId('photo-preview');
@@ -63,15 +81,16 @@ describe('should upload photo form component has correct behaviour', () => {
     const effectsWithoutNone = effectElements.filter((element) => element.value !== 'none');
     const randomEffectIdx = getRandomInt(0, effectsWithoutNone.length);
     const randomEffect = effectsWithoutNone[randomEffectIdx];
+    const filter = PhotoFilter[capitalize(randomEffect.value)];
 
     expect(effectLevelElement).not.toHaveValue();
     expect(effectLevelElement).toHaveAttribute('step', 'any');
     expect(photoPreviewElement.style.filter).toBe('');
 
     await user.click(randomEffect);
-    expect(effectLevelElement).toHaveValue();
-    expect(effectLevelElement).not.toHaveAttribute('step', 'any');
-    expect(photoPreviewElement.style.filter).not.toBe('');
+    expect(effectLevelElement).toHaveValue(filter.Max);
+    expect(effectLevelElement).not.toHaveAttribute('step', filter.Step);
+    expect(photoPreviewElement.style.filter).not.toBe(filter.Template(filter.Max));
 
     const noneEffect = effectElements.find((element) => element.value === 'none');
     await user.click(noneEffect);
@@ -132,6 +151,11 @@ describe('should upload photo form component has correct behaviour', () => {
     expect(overlayElement).not.toHaveClass(HIDE_ELEMENT_CLASS);
     expect(document.body).toHaveClass(MODAL_OPEN_CLASS);
 
+    const scaleInput = screen.getByTestId('scale-input');
+    const scaleDecreaseButton = screen.getByTestId('scale-decrease');
+    await user.click(scaleDecreaseButton);
+    expect(scaleInput).toHaveValue(`${100 - SCALE_PERCENT_INCREMENT}%`);
+
     const effectsContainerElement = screen.getByTestId('photo-effects');
     const effectLevelElement = screen.getByTestId('effect-level');
     const photoPreviewElement = screen.getByTestId('photo-preview');
@@ -172,6 +196,7 @@ describe('should upload photo form component has correct behaviour', () => {
     expect(effectLevelElement).toHaveAttribute('step', 'any');
     expect(hashtagsInputElement).not.toHaveValue();
     expect(commentInputElement).not.toHaveValue();
+    expect(scaleInput).toHaveValue('100%');
     Object.values(HashtagErrorMessage).forEach((message) => {
       expect(queryByText(textFieldset, (text) => text.includes(message))).not.toBeInTheDocument();
     });

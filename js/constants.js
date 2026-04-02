@@ -2,7 +2,9 @@ export const HIDE_ELEMENT_CLASS = 'hidden';
 export const MODAL_OPEN_CLASS = 'modal-open';
 
 export const LOAD_MORE_INCREMENT = 5;
-export const SCALE_INCREMENT = 25;
+
+export const SCALE_PERCENT_INCREMENT = 25;
+export const MIN_SCALE_PERCENT = 25;
 
 export const HASHTAG_MAX_LENGTH = 20;
 export const HASHTAG_MAX_COUNT = 5;
