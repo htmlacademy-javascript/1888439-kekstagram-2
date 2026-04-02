@@ -11,7 +11,7 @@ import {
   SCALE_PERCENT_INCREMENT
 } from '../constants.js';
 import { getElement } from '../element-cache.js';
-import { capitalize, interceptEscInsideInput, trimAndSplit } from '../utils.js';
+import { capitalize, interceptEscInsideInput, isContainsSomeClass, trimAndSplit } from '../utils.js';
 
 let validator = null;
 
@@ -124,16 +124,23 @@ const handleChangeFilter = ({ target }) => {
 };
 
 /**
+ * Handles change of scale input
+ *
  * @param {MouseEvent} evt
  */
-const handleScaleChange = (evt) => {
-  if (!(evt.target instanceof HTMLButtonElement)) {
+const handleScaleChange = ({ target, currentTarget }) => {
+  const buttonClasses = [
+    'scale__control--smaller',
+    'scale__control--bigger',
+  ];
+
+  if (!isContainsSomeClass(target, buttonClasses)) {
     return;
   }
 
-  const isIncrease = evt.target.classList.contains('scale__control--bigger');
-  const scaleInput = getElement('.scale__control--value', evt.currentTarget);
+  const scaleInput = getElement('.scale__control--value', currentTarget);
   const currentScale = parseInt(scaleInput.value, 10);
+  const isIncrease = target.classList.contains('scale__control--bigger');
   const changedScale = currentScale + (isIncrease ? SCALE_PERCENT_INCREMENT : -SCALE_PERCENT_INCREMENT);
   scaleInput.value = `${Math.max(MIN_SCALE_PERCENT, Math.min(changedScale, 100))}%`;
 };
