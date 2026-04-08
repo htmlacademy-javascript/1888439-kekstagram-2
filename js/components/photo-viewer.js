@@ -5,9 +5,9 @@ import { fillSocial } from './social.js';
 /**
  * Opens photo viewer modal
  *
- * @param {import('../fake-data.js').Photo} photo
+ * @param {import('../api.js').Photo} photo
  */
-export const openPhotoViewer = (photo) => {
+const openPhotoViewer = (photo) => {
   const photoViewerEl = document.querySelector('.big-picture');
 
   /** @type {HTMLImageElement} */
@@ -30,7 +30,7 @@ export const openPhotoViewer = (photo) => {
 /**
  * Closes photo viewer modal
  */
-export const closePhotoViewer = () => {
+const closePhotoViewer = () => {
   const photoViewerEl = document.querySelector('.big-picture');
   const closeBtn = photoViewerEl.querySelector('.big-picture__cancel');
 
@@ -63,3 +63,5 @@ function handleCloseClick(evt) {
   evt.preventDefault();
   closePhotoViewer();
 }
+
+export { closePhotoViewer, openPhotoViewer };

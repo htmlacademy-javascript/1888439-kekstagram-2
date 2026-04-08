@@ -3,8 +3,8 @@ import userEvent from '@testing-library/user-event';
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
 import { closePhotoViewer } from '../../../js/components/photo-viewer.js';
 import { createFragmentWithPhotos, fillDocumentWithPhotos, fillPhotoTemplate } from '../../../js/components/photos.js';
-import { FAKE_PHOTOS_COUNT, HIDE_ELEMENT_CLASS, MIN_FAKE_PHOTO_ID, MODAL_OPEN_CLASS } from '../../../js/constants.js';
-import { generateFakePost, generateFakePosts } from '../../../js/fake-data.js';
+import { HIDE_ELEMENT_CLASS, MODAL_OPEN_CLASS } from '../../../js/constants.js';
+import { FAKE_PHOTOS_COUNT, generateFakePost, generateFakePosts, MIN_FAKE_PHOTO_ID } from '../../fake-data.js';
 
 const createPictureTemplate = () => {
   const pictureTemplate = document.createElement('template');

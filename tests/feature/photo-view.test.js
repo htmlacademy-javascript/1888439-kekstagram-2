@@ -1,13 +1,13 @@
-import { readFile } from 'node:fs/promises';
-import { URL as NodeURL } from 'node:url';
 import { getByTestId, queryByAltText, queryByText, screen } from '@testing-library/dom';
 import userEvent from '@testing-library/user-event';
+import { readFile } from 'node:fs/promises';
+import { URL as NodeURL } from 'node:url';
 import { afterEach, beforeAll, beforeEach, describe, expect, test } from 'vitest';
 import { closePhotoViewer } from '../../js/components/photo-viewer.js';
 import { fillDocumentWithPhotos } from '../../js/components/photos.js';
-import { FAKE_PHOTOS_COUNT, HIDE_ELEMENT_CLASS, LOAD_MORE_INCREMENT, MIN_FAKE_COMMENT_ID, MODAL_OPEN_CLASS } from '../../js/constants.js';
-import { generateFakeComment, generateFakePosts } from '../../js/fake-data.js';
+import { HIDE_ELEMENT_CLASS, LOAD_MORE_INCREMENT, MODAL_OPEN_CLASS } from '../../js/constants.js';
 import { getRandomInt } from '../../js/utils.js';
+import { FAKE_PHOTOS_COUNT, generateFakeComment, generateFakePosts, MIN_FAKE_COMMENT_ID } from '../fake-data.js';
 
 describe('should photo view component has correct behaviour', () => {
   /** @type {import('../../js/fake-data.js').Photo[]} */

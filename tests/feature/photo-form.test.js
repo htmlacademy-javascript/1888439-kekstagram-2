@@ -17,12 +17,22 @@ import {
 import { resetCache } from '../../js/element-cache.js';
 import { capitalize, getRandomInt } from '../../js/utils.js';
 import { getScript } from '../helpers.js';
+import { uploadPhoto } from '../../js/api.js';
+
+vi.mock('../../js/api.js', async (importOriginal) => {
+  const originalModule = await importOriginal();
+  return {
+    ...originalModule,
+    uploadPhoto: vi.fn(),
+  };
+});
 
 describe('should upload photo form component has correct behaviour', () => {
   let html = '';
   let pristineElement = null;
   let noUiSliderElement = null;
   const photoFile = new File(['content'], 'photo.jpg', { type: 'image/jpeg' });
+  const mockedUploadPhoto = vi.mocked(uploadPhoto);
 
   beforeAll(async () => {
     const pathToTemplate = new NodeURL('./index-page.template.html', import.meta.url);
@@ -48,13 +58,14 @@ describe('should upload photo form component has correct behaviour', () => {
     document.head.innerHTML = '';
     document.body.innerHTML = '';
     document.body.className = '';
+    vi.resetAllMocks();
     resetCache();
     delete window.Pristine;
+    delete window.noUiSlider;
   });
 
   test('when user tries to upload photo', async () => {
     const user = userEvent.setup();
-    vi.spyOn(HTMLFormElement.prototype, 'submit').mockReturnValueOnce();
 
     const uploadInput = screen.getByTestId('photo-upload-input');
     const overlayElement = screen.getByTestId('overlay');
@@ -138,7 +149,7 @@ describe('should upload photo form component has correct behaviour', () => {
 
     const submitButton = screen.getByTestId('photo-upload-submit');
     await user.click(submitButton);
-    expect(HTMLFormElement.prototype.submit).toBeCalled();
+    expect(mockedUploadPhoto).toBeCalledTimes(1);
   }, { timeout: 10_000 });
 
   test('when user opens and closes form', async () => {

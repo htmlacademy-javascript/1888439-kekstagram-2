@@ -1,3 +1,4 @@
+import { uploadPhoto } from '../api.js';
 import {
   HASHTAG_MAX_COUNT,
   HASHTAG_MAX_LENGTH,
@@ -8,10 +9,12 @@ import {
   MIN_SCALE_PERCENT,
   MODAL_OPEN_CLASS,
   PhotoFilter,
-  SCALE_PERCENT_INCREMENT
+  SCALE_PERCENT_INCREMENT,
+  UploadAlertType
 } from '../constants.js';
 import { getElement } from '../element-cache.js';
 import { capitalize, interceptEscInsideInput, isContainsSomeClass, trimAndSplit } from '../utils.js';
+import { showUploadAlert } from './alert/upload-alert.js';
 
 let validator = null;
 
@@ -49,20 +52,6 @@ const hashtagValidators = [
     HashtagErrorMessage.Duplications
   ],
 ];
-
-/**
- * Handles photo upload form submit event
- *
- * @param {SubmitEvent} evt
- */
-const handleFormSubmit = (evt) => {
-  evt.preventDefault();
-
-  if (validator.validate()) {
-    evt.target.submit();
-  }
-};
-
 
 /** @typedef {typeof import('../constants.js').PhotoFilter} PhotoFilter */
 /**
@@ -148,7 +137,7 @@ const handleScaleChange = ({ target, currentTarget }) => {
 /**
  * Opens photo upload form
  */
-export const openPhotoForm = () => {
+const openPhotoForm = () => {
   const uploadFormElement = getElement('#upload-select-image');
   const formOverlayElement = getElement('.img-upload__overlay');
   const formFiltersElement = getElement('.img-upload__effects', formOverlayElement);
@@ -180,7 +169,7 @@ export const openPhotoForm = () => {
 /**
  * Closes photo upload form
  */
-export const closePhotoForm = () => {
+const closePhotoForm = () => {
   const uploadFormElement = getElement('#upload-select-image');
   const formOverlayElement = getElement('.img-upload__overlay');
   const closeFormButton = getElement('.img-upload__cancel', formOverlayElement);
@@ -238,12 +227,44 @@ function handleEscKeydown(evt) {
 }
 
 /**
+ * Handles photo upload form submit event
+ *
+ * @param {SubmitEvent} evt
+ */
+async function handleFormSubmit(evt) {
+  evt.preventDefault();
+
+  if (!validator.validate()) {
+    return;
+  }
+
+  const formData = new FormData(evt.target);
+
+  window.removeEventListener('keydown', handleEscKeydown);
+  const addWindowEscKeydownHandler = () => {
+    window.addEventListener('keydown', handleEscKeydown);
+  };
+
+  try {
+    await uploadPhoto(formData);
+  } catch {
+    showUploadAlert(UploadAlertType.Error, addWindowEscKeydownHandler);
+    return;
+  }
+
+  showUploadAlert(UploadAlertType.Success);
+  closePhotoForm();
+}
+
+/**
  * Handle change event on input[type='file'] element
  * and opens form for uploading image
  *
  * @param {InputEvent} evt
  */
-export const handleUploadImgInput = (evt) => {
+const handleUploadImgInput = (evt) => {
   evt.preventDefault();
   openPhotoForm();
 };
+
+export { closePhotoForm, handleUploadImgInput, openPhotoForm };

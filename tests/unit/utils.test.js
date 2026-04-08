@@ -1,7 +1,17 @@
 import { queryByText, screen } from '@testing-library/dom';
-import { afterAll, afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
-import { capitalize, createFragmentWith, getRandomInt, interceptEscInsideInput, isContainsSomeClass, keepNumberInRange, parseTime, selectOrThrow, trimAndSplit } from '../../js/utils.js';
 import userEvent from '@testing-library/user-event';
+import { afterAll, afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
+import {
+  capitalize,
+  createFragmentWith,
+  getRandomInt,
+  interceptEscInsideInput,
+  isContainsSomeClass,
+  keepNumberInRange,
+  parseTime,
+  selectOrThrow,
+  trimAndSplit
+} from '../../js/utils.js';
 
 describe('should getRandomInt function return the deterministic value', () => {
   beforeEach(() => {

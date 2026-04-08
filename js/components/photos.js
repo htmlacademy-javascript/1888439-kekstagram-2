@@ -5,7 +5,7 @@ import { openPhotoViewer } from './photo-viewer.js';
  * Handles click event on photo thumbnail
  *
  * @param {MouseEvent} evt
- * @param {import('../fake-data.js').Photo} photo
+ * @param {import('../api.js').Photo} photo
  */
 const handlePhotoClick = (evt, photo) => {
   evt.preventDefault();
@@ -16,10 +16,10 @@ const handlePhotoClick = (evt, photo) => {
  * Fills photo template element with data
  *
  * @param {HTMLElement} photoTemplate
- * @param {import('../fake-data.js').Photo} photo
+ * @param {import('../api.js').Photo} photo
  * @returns {HTMLElement}
  */
-export const fillPhotoTemplate = (photoTemplate, photo) => {
+const fillPhotoTemplate = (photoTemplate, photo) => {
   const photoElement = photoTemplate.cloneNode(true);
 
   /** @type {HTMLAnchorElement} */
@@ -44,10 +44,10 @@ export const fillPhotoTemplate = (photoTemplate, photo) => {
 /**
  * Create a DocumentFragment from an array of photos
  *
- * @param {import('../fake-data.js').Photo[]} photos
+ * @param {import('../api.js').Photo[]} photos
  * @returns {DocumentFragment}
  */
-export const createFragmentWithPhotos = (photos) => {
+const createFragmentWithPhotos = (photos) => {
   /** @type {HTMLTemplateElement} */
   const photoTemplate = selectOrThrow('#picture');
   const fragment = createFragmentWith(
@@ -61,12 +61,14 @@ export const createFragmentWithPhotos = (photos) => {
 /**
  * Fills document with created picture elements
  *
- * @param {import('../fake-data.js').Photo[]} photos
+ * @param {import('../api.js').Photo[]} photos
  * @return {void}
  */
-export const fillDocumentWithPhotos = (photos) => {
+const fillDocumentWithPhotos = (photos) => {
   const picturesEl = selectOrThrow('.pictures');
 
   const fragmentWithPhotos = createFragmentWithPhotos(photos);
   picturesEl.append(fragmentWithPhotos);
 };
+
+export { createFragmentWithPhotos, fillDocumentWithPhotos, fillPhotoTemplate };
