@@ -7,7 +7,7 @@ import { parseTime } from './utils.js';
  * @param {number} maxLen - Maximum string length
  * @returns {boolean}
  */
-export const isNotLonger = (str, maxLen) => {
+const isNotLonger = (str, maxLen) => {
   const segmenter = new Intl.Segmenter();
   const segmenterIter = segmenter.segment(str)[Symbol.iterator]();
 
@@ -25,7 +25,7 @@ export const isNotLonger = (str, maxLen) => {
  * @param {string} str - String to be checked
  * @returns {boolean}
  */
-export const isPalindrome = (str) => {
+const isPalindrome = (str) => {
   const isPunctuation = /\p{P}|\p{Z}/u;
   const segmenter = new Intl.Segmenter();
 
@@ -56,7 +56,7 @@ export const isPalindrome = (str) => {
  * @param {string | number} strOrNum - Arbitrary text or number
  * @returns {number}
  */
-export const collectNumber = (strOrNum) => {
+const collectNumber = (strOrNum) => {
   const isDigit = /\d/;
   const str = strOrNum.toString();
 
@@ -80,7 +80,7 @@ export const collectNumber = (strOrNum) => {
  * @param {number} meetingDuration - Meeting duration
  * @returns {boolean}
  */
-export const isMeetingOnTime = (workdayStart, workdayEnd, meetingBegin, meetingDuration) => {
+const isMeetingOnTime = (workdayStart, workdayEnd, meetingBegin, meetingDuration) => {
   const workdayStartMins = parseTime(workdayStart);
   const meetingBeginMins = parseTime(meetingBegin);
   if (workdayStartMins > meetingBeginMins) {
@@ -90,3 +90,5 @@ export const isMeetingOnTime = (workdayStart, workdayEnd, meetingBegin, meetingD
   const workdayEndMins = parseTime(workdayEnd);
   return meetingBeginMins + meetingDuration <= workdayEndMins;
 };
+
+export { collectNumber, isMeetingOnTime, isNotLonger, isPalindrome };

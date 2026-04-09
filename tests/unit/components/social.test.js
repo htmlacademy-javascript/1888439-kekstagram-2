@@ -2,8 +2,8 @@ import { getByTestId, queryByAltText, queryByText } from '@testing-library/dom';
 import userEvent from '@testing-library/user-event';
 import { afterEach, beforeEach, describe, expect, test } from 'vitest';
 import { createFragmentWithComments, fillComment, fillSocial } from '../../../js/components/social.js';
-import { HIDE_ELEMENT_CLASS, LOAD_MORE_INCREMENT, MIN_FAKE_COMMENT_ID, MIN_FAKE_PHOTO_ID } from '../../../js/constants.js';
-import { generateFakeComment, generateFakePost } from '../../../js/fake-data.js';
+import { HIDE_ELEMENT_CLASS, LOAD_MORE_INCREMENT } from '../../../js/constants.js';
+import { generateFakeComment, generateFakePost, MIN_FAKE_COMMENT_ID, MIN_FAKE_PHOTO_ID} from '../../fake-data.js';
 
 const createCommentTemplate = () => {
   const commentTemplate = document.createElement('template');

@@ -1,22 +1,20 @@
 import { afterEach, describe, expect, test, vi } from 'vitest';
+import { getRandomInt } from '../../js/utils.js';
 import {
   FAKE_PHOTO_COMMENTS,
   FAKE_PHOTOS_COUNT,
   FAKE_USER_MESSAGES,
   FAKE_USER_NAMES,
   FakeLikes,
-  MIN_FAKE_COMMENT_ID,
-  MIN_FAKE_PHOTO_ID
-} from '../../js/constants.js';
-import {
   generateFakeComment,
   generateFakeMessage,
   generateFakePost,
   generateFakePosts,
   getFakeAvatarPath,
-  getFakePhotoPath
-} from '../../js/fake-data.js';
-import { getRandomInt } from '../../js/utils.js';
+  getFakePhotoPath,
+  MIN_FAKE_COMMENT_ID,
+  MIN_FAKE_PHOTO_ID
+} from '../fake-data.js';
 
 vi.mock('../../js/utils.js', async (importOriginal) => {
   const originalModule = await importOriginal();

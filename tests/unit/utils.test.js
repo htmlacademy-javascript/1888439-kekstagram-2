@@ -1,7 +1,17 @@
 import { queryByText, screen } from '@testing-library/dom';
-import { afterAll, afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
-import { capitalize, createFragmentWith, getRandomInt, interceptEscInsideInput, keepNumberInRange, parseTime, selectOrThrow, trimAndSplit } from '../../js/utils.js';
 import userEvent from '@testing-library/user-event';
+import { afterAll, afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
+import {
+  capitalize,
+  createFragmentWith,
+  getRandomInt,
+  interceptEscInsideInput,
+  isContainsSomeClass,
+  keepNumberInRange,
+  parseTime,
+  selectOrThrow,
+  trimAndSplit
+} from '../../js/utils.js';
 
 describe('should getRandomInt function return the deterministic value', () => {
   beforeEach(() => {
@@ -216,5 +226,18 @@ describe('should interceptEscInsideInput function intercept Escape keydown event
     await user.click(textareaElement);
     await user.keyboard('{Escape}');
     expect(handleKeydown).toBeCalledTimes(0);
+  });
+});
+
+describe('should isContainsSomeClass function check if the element contains any of passed classes', () => {
+  test('when it gets array of classes', () => {
+    const classes = ['a', 'b', 'c'];
+    const randomClass = classes[getRandomInt(classes.length)];
+    const element = document.createElement('div');
+    element.classList.add(...classes);
+
+    expect(isContainsSomeClass(element, [randomClass])).toBe(true);
+    expect(isContainsSomeClass(element, ['d', randomClass, 'e'])).toBe(true);
+    expect(isContainsSomeClass(element, ['d', 'e'])).toBe(false);
   });
 });

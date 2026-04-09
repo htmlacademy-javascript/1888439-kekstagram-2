@@ -10,7 +10,7 @@ const cache = {};
  * @param {HTMLElement} [rootEl]
  * @returns {HTMLElement}
  */
-export const getElement = (selector, rootEl) => {
+const getElement = (selector, rootEl) => {
   if (selector in cache) {
     return cache[selector];
   }
@@ -27,8 +27,10 @@ export const getElement = (selector, rootEl) => {
 /**
  * Resets element cache
  */
-export const resetCache = () => {
+const resetCache = () => {
   Object.keys(cache).forEach((key) => {
     delete cache[key];
   });
 };
+
+export { getElement, resetCache };

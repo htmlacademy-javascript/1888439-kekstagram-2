@@ -144,3 +144,15 @@ export const interceptEscInsideInput = (evt) => {
     evt.stopPropagation();
   }
 };
+
+/**
+ * Checks if the element contains any of the passed classes
+ *
+ * @param {HTMLElement} element
+ * @param {string[]} classes
+ */
+export const isContainsSomeClass = (element, classes) => {
+  const classSnapshot = Array.from(element.classList);
+
+  return classSnapshot.some((className) => classes.includes(className));
+};

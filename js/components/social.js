@@ -1,7 +1,7 @@
 import { HIDE_ELEMENT_CLASS, LOAD_MORE_INCREMENT } from '../constants.js';
 import { createFragmentWith, selectOrThrow } from '../utils.js';
 
-/** @type {import('../fake-data.js').Comment[]} */
+/** @type {import('../api.js').Comment[]} */
 let currentComments = [];
 let shownCommentsPosition = 0;
 
@@ -9,10 +9,10 @@ let shownCommentsPosition = 0;
  * Fills photo template element with comment data
  *
  * @param {HTMLElement} commentTemplate
- * @param {import('../fake-data.js').Comment} comment
+ * @param {import('../api.js').Comment} comment
  * @return {HTMLElement}
  */
-export const fillComment = (commentTemplate, comment) => {
+const fillComment = (commentTemplate, comment) => {
   const commentEl = commentTemplate.cloneNode(true);
   /** @type {HTMLImageElement} */
   const avatarEl = commentEl.querySelector('.social__picture');
@@ -29,10 +29,10 @@ export const fillComment = (commentTemplate, comment) => {
 /**
  * Creates a DocumentFragment with comment elements
  *
- * @param {import('../fake-data.js').Comment[]} comments
+ * @param {import('../api.js').Comment[]} comments
  * @returns {DocumentFragment}
  */
-export const createFragmentWithComments = (comments) => {
+const createFragmentWithComments = (comments) => {
   /** @type {HTMLTemplateElement} */
   const commentTemplate = selectOrThrow('#comment');
   const fragment = createFragmentWith(
@@ -47,7 +47,7 @@ export const createFragmentWithComments = (comments) => {
  * Extracts the next batch of comments from currentComments
  * of size LOAD_MORE_INCREMENT
  *
- * @returns {import('../fake-data.js').Comment[]}
+ * @returns {import('../api.js').Comment[]}
  */
 const getNextComments = () => {
   const previousCommentsPosition = shownCommentsPosition;
@@ -82,9 +82,9 @@ const appendComments = (rootEl) => {
  * Fills socials section with comments
  *
  * @param {HTMLElement} rootEl
- * @param {import('../fake-data.js').Photo} photo
+ * @param {import('../api.js').Photo} photo
  */
-export const fillSocial = (rootEl, photo) => {
+const fillSocial = (rootEl, photo) => {
   const descriptionEl = rootEl.querySelector('.social__caption');
   const likesCountEl = rootEl.querySelector('.likes-count');
   const commentsCountEl = rootEl.querySelector('.social__comment-count');
@@ -123,3 +123,5 @@ function handleClickMoreButton(evt) {
   const socialEl = evt.target.closest('.social');
   appendComments(socialEl);
 }
+
+export { createFragmentWithComments, fillComment, fillSocial };

@@ -1,3 +1,4 @@
+import { uploadPhoto } from '../api.js';
 import {
   HASHTAG_MAX_COUNT,
   HASHTAG_MAX_LENGTH,
@@ -8,10 +9,12 @@ import {
   MIN_SCALE_PERCENT,
   MODAL_OPEN_CLASS,
   PhotoFilter,
-  SCALE_PERCENT_INCREMENT
+  SCALE_PERCENT_INCREMENT,
+  UploadAlertType
 } from '../constants.js';
 import { getElement } from '../element-cache.js';
-import { capitalize, interceptEscInsideInput, trimAndSplit } from '../utils.js';
+import { capitalize, interceptEscInsideInput, isContainsSomeClass, trimAndSplit } from '../utils.js';
+import { showUploadAlert } from './alert/upload-alert.js';
 
 let validator = null;
 
@@ -49,20 +52,6 @@ const hashtagValidators = [
     HashtagErrorMessage.Duplications
   ],
 ];
-
-/**
- * Handles photo upload form submit event
- *
- * @param {SubmitEvent} evt
- */
-const handleFormSubmit = (evt) => {
-  evt.preventDefault();
-
-  if (validator.validate()) {
-    evt.target.submit();
-  }
-};
-
 
 /** @typedef {typeof import('../constants.js').PhotoFilter} PhotoFilter */
 /**
@@ -124,16 +113,23 @@ const handleChangeFilter = ({ target }) => {
 };
 
 /**
+ * Handles change of scale input
+ *
  * @param {MouseEvent} evt
  */
-const handleScaleChange = (evt) => {
-  if (!(evt.target instanceof HTMLButtonElement)) {
+const handleScaleChange = ({ target, currentTarget }) => {
+  const buttonClasses = [
+    'scale__control--smaller',
+    'scale__control--bigger',
+  ];
+
+  if (!isContainsSomeClass(target, buttonClasses)) {
     return;
   }
 
-  const isIncrease = evt.target.classList.contains('scale__control--bigger');
-  const scaleInput = getElement('.scale__control--value', evt.currentTarget);
+  const scaleInput = getElement('.scale__control--value', currentTarget);
   const currentScale = parseInt(scaleInput.value, 10);
+  const isIncrease = target.classList.contains('scale__control--bigger');
   const changedScale = currentScale + (isIncrease ? SCALE_PERCENT_INCREMENT : -SCALE_PERCENT_INCREMENT);
   scaleInput.value = `${Math.max(MIN_SCALE_PERCENT, Math.min(changedScale, 100))}%`;
 };
@@ -141,7 +137,7 @@ const handleScaleChange = (evt) => {
 /**
  * Opens photo upload form
  */
-export const openPhotoForm = () => {
+const openPhotoForm = () => {
   const uploadFormElement = getElement('#upload-select-image');
   const formOverlayElement = getElement('.img-upload__overlay');
   const formFiltersElement = getElement('.img-upload__effects', formOverlayElement);
@@ -173,7 +169,7 @@ export const openPhotoForm = () => {
 /**
  * Closes photo upload form
  */
-export const closePhotoForm = () => {
+const closePhotoForm = () => {
   const uploadFormElement = getElement('#upload-select-image');
   const formOverlayElement = getElement('.img-upload__overlay');
   const closeFormButton = getElement('.img-upload__cancel', formOverlayElement);
@@ -231,12 +227,44 @@ function handleEscKeydown(evt) {
 }
 
 /**
+ * Handles photo upload form submit event
+ *
+ * @param {SubmitEvent} evt
+ */
+async function handleFormSubmit(evt) {
+  evt.preventDefault();
+
+  if (!validator.validate()) {
+    return;
+  }
+
+  const formData = new FormData(evt.target);
+
+  window.removeEventListener('keydown', handleEscKeydown);
+  const addWindowEscKeydownHandler = () => {
+    window.addEventListener('keydown', handleEscKeydown);
+  };
+
+  try {
+    await uploadPhoto(formData);
+  } catch {
+    showUploadAlert(UploadAlertType.Error, addWindowEscKeydownHandler);
+    return;
+  }
+
+  showUploadAlert(UploadAlertType.Success);
+  closePhotoForm();
+}
+
+/**
  * Handle change event on input[type='file'] element
  * and opens form for uploading image
  *
  * @param {InputEvent} evt
  */
-export const handleUploadImgInput = (evt) => {
+const handleUploadImgInput = (evt) => {
   evt.preventDefault();
   openPhotoForm();
 };
+
+export { closePhotoForm, handleUploadImgInput, openPhotoForm };
