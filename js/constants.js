@@ -69,3 +69,10 @@ export const PhotoFilter = Object.freeze({
 
 export const PHOTO_DESCRIPTION_MAX_LENGTH = 140;
 export const USER_COMMENT_MAX_LENGTH = 140;
+
+export const FilterVariant = Object.freeze({
+  Default: 'filter-default',
+  Random: 'filter-random',
+  Discussed: 'filter-discussed',
+});
+export const MAX_RANDOM_FILTER_PHOTOS = 10;

@@ -156,3 +156,28 @@ export const isContainsSomeClass = (element, classes) => {
 
   return classSnapshot.some((className) => classes.includes(className));
 };
+
+/**
+ * Shuffles massive using the Fisher-Yates method
+ *
+ * @template ArrayType
+ * @param {ArrayType[]} arr
+ * @param {number} [limit] - Max length of resulting array
+ * @return {ArrayType[]}
+ */
+export const shuffle = (arr, limit) => {
+  const arrClone = arr.slice();
+
+  if (limit === undefined || limit > arr.length) {
+    limit = arr.length;
+  }
+
+  for (let i = 0; i < limit; ++i) {
+    const randomIdx = getRandomInt(i, arr.length);
+    const tmp = arrClone[randomIdx];
+    arrClone[randomIdx] = arrClone[i];
+    arrClone[i] = tmp;
+  }
+
+  return arrClone.slice(0, limit);
+};
