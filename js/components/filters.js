@@ -1,4 +1,6 @@
+import { FILTER_CHANGE_DEBOUNCE_TIMEOUT } from '../constants.js';
 import { getElement } from '../element-cache.js';
+import { debounce } from '../utils.js';
 
 let activeFilterElement = null;
 let filterChangeHandler = null;
@@ -50,7 +52,7 @@ const initFilters = (changeAction) => {
   filters.classList.remove('img-filters--inactive');
   filtersForm.addEventListener('click', handleClick);
 
-  filterChangeHandler = changeAction;
+  filterChangeHandler = debounce(changeAction, FILTER_CHANGE_DEBOUNCE_TIMEOUT);
 };
 
 export { initFilters };

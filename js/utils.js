@@ -181,3 +181,28 @@ export const shuffle = (arr, limit) => {
 
   return arrClone.slice(0, limit);
 };
+
+/**
+ * Debounces a function with a specified timeout
+ *
+ * @template {(...any) => unknown} CallbackType
+ * @param {CallbackType} callback
+ * @param {number} timeoutDelay
+ */
+export function debounce (callback, timeoutDelay = 500) {
+  // Используем замыкания, чтобы id таймаута у нас навсегда приклеился
+  // к возвращаемой функции с setTimeout, тогда мы его сможем перезаписывать
+  let timeoutId;
+
+  return (...rest) => {
+    // Перед каждым новым вызовом удаляем предыдущий таймаут,
+    // чтобы они не накапливались
+    clearTimeout(timeoutId);
+
+    // Затем устанавливаем новый таймаут с вызовом колбэка на ту же задержку
+    timeoutId = setTimeout(() => callback.apply(this, rest), timeoutDelay);
+
+    // Таким образом цикл «поставить таймаут - удалить таймаут» будет выполняться,
+    // пока действие совершается чаще, чем переданная задержка timeoutDelay
+  };
+}

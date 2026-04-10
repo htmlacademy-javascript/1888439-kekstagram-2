@@ -76,3 +76,4 @@ export const FilterVariant = Object.freeze({
   Discussed: 'filter-discussed',
 });
 export const MAX_RANDOM_FILTER_PHOTOS = 10;
+export const FILTER_CHANGE_DEBOUNCE_TIMEOUT = 500; // 500ms
