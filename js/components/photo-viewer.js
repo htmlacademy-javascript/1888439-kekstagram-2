@@ -1,4 +1,5 @@
 import { HIDE_ELEMENT_CLASS, MODAL_OPEN_CLASS } from '../constants.js';
+import { getElement } from '../element-cache.js';
 import { interceptEscInsideInput } from '../utils.js';
 import { fillSocial } from './social.js';
 
@@ -8,12 +9,12 @@ import { fillSocial } from './social.js';
  * @param {import('../api.js').Photo} photo
  */
 const openPhotoViewer = (photo) => {
-  const photoViewerEl = document.querySelector('.big-picture');
+  const photoViewerEl = getElement('.big-picture');
 
   /** @type {HTMLImageElement} */
-  const imgEl = photoViewerEl.querySelector('.big-picture__img img');
-  const closeBtn = photoViewerEl.querySelector('.big-picture__cancel');
-  const socialEl = photoViewerEl.querySelector('.social');
+  const imgEl = getElement('.big-picture__img img', photoViewerEl);
+  const closeBtn = getElement('.big-picture__cancel', photoViewerEl);
+  const socialEl = getElement('.social');
 
   fillSocial(socialEl, photo);
 
@@ -31,8 +32,8 @@ const openPhotoViewer = (photo) => {
  * Closes photo viewer modal
  */
 const closePhotoViewer = () => {
-  const photoViewerEl = document.querySelector('.big-picture');
-  const closeBtn = photoViewerEl.querySelector('.big-picture__cancel');
+  const photoViewerEl = getElement('.big-picture');
+  const closeBtn = getElement('.big-picture__cancel', photoViewerEl);
 
 
   photoViewerEl.removeEventListener('keydown', interceptEscInsideInput);

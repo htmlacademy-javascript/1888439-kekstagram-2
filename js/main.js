@@ -2,8 +2,9 @@ import { getPhotos } from './api.js';
 import { showDownloadErrorAlert } from './components/alert/download-alert.js';
 import { handleUploadImgInput } from './components/photo-form.js';
 import { fillDocumentWithPhotos } from './components/photos.js';
+import { getElement } from './element-cache.js';
 
-const imgUploadElement = document.querySelector('.img-upload__input');
+const imgUploadElement = getElement('.img-upload__input');
 imgUploadElement.addEventListener('change', handleUploadImgInput);
 
 /** @type {import('./api.js').Photo[] | null} */
