@@ -1,4 +1,5 @@
 import { HIDE_ELEMENT_CLASS, LOAD_MORE_INCREMENT } from '../constants.js';
+import { getElement } from '../element-cache.js';
 import { createFragmentWith, selectOrThrow } from '../utils.js';
 
 /** @type {import('../api.js').Comment[]} */
@@ -62,10 +63,10 @@ const getNextComments = () => {
  * @param {HTMLElement} rootEl
  */
 const appendComments = (rootEl) => {
-  const commentsCountEl = rootEl.querySelector('.social__comment-count');
-  const shownCommentsEl = commentsCountEl.querySelector('.social__comment-shown-count');
-  const commentsContainer = rootEl.querySelector('.social__comments');
-  const commentsLoaderBtn = rootEl.querySelector('.social__comments-loader');
+  const commentsCountEl = getElement('.social__comment-count', rootEl);
+  const shownCommentsEl = getElement('.social__comment-shown-count', commentsCountEl);
+  const commentsContainer = getElement('.social__comments', rootEl);
+  const commentsLoaderBtn = getElement('.social__comments-loader', rootEl);
 
   commentsContainer.append(
     createFragmentWithComments(getNextComments()),
@@ -85,13 +86,13 @@ const appendComments = (rootEl) => {
  * @param {import('../api.js').Photo} photo
  */
 const fillSocial = (rootEl, photo) => {
-  const descriptionEl = rootEl.querySelector('.social__caption');
-  const likesCountEl = rootEl.querySelector('.likes-count');
-  const commentsCountEl = rootEl.querySelector('.social__comment-count');
-  const totalCommentsEl = commentsCountEl.querySelector('.social__comment-total-count');
-  const shownCommentsEl = commentsCountEl.querySelector('.social__comment-shown-count');
-  const commentsContainer = rootEl.querySelector('.social__comments');
-  const commentsLoaderBtn = rootEl.querySelector('.social__comments-loader');
+  const descriptionEl = getElement('.social__caption', rootEl);
+  const likesCountEl = getElement('.likes-count', rootEl);
+  const commentsCountEl = getElement('.social__comment-count', rootEl);
+  const totalCommentsEl = getElement('.social__comment-total-count', commentsCountEl);
+  const shownCommentsEl = getElement('.social__comment-shown-count', commentsCountEl);
+  const commentsContainer = getElement('.social__comments', rootEl);
+  const commentsLoaderBtn = getElement('.social__comments-loader', rootEl);
 
   currentComments = photo.comments.slice();
   shownCommentsPosition = 0;
