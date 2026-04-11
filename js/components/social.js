@@ -36,12 +36,11 @@ const fillComment = (commentTemplate, comment) => {
 const createFragmentWithComments = (comments) => {
   /** @type {HTMLTemplateElement} */
   const commentTemplate = selectOrThrow('#comment');
-  const fragment = createFragmentWith(
+
+  return createFragmentWith(
     comments,
     (comment) => fillComment(commentTemplate.content, comment),
   );
-
-  return fragment;
 };
 
 /**

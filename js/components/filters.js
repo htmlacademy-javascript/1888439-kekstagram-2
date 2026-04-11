@@ -24,7 +24,6 @@ const setFilter = (filterVariant) => {
  * Handles click on filter element
  *
  * @param {MouseEvent} evt
- * @param {(variant: FilterVariant[keyof FilterVariant]) => void} changeHandler
  */
 const handleClick = (evt) => {
   evt.preventDefault();
