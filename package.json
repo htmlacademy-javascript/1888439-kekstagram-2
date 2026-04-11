@@ -24,6 +24,8 @@
   "scripts": {
     "start": "vite --port 3000 --open",
     "test": "vitest",
+    "test:unit": "vitest --config vite.unit.config.mjs",
+    "test:feature": "vitest",
     "lint": "eslint js/"
   },
   "engines": {

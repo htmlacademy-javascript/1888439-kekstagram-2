@@ -40,6 +40,7 @@ export const getPhotos = async () => {
  */
 export const uploadPhoto = async (formData) => {
   const url = API_BASE_PATH + ApiPath.UploadPhoto;
+
   const response = await fetch(url, {
     method: 'POST',
     body: formData
