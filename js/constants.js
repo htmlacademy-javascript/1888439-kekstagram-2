@@ -34,6 +34,7 @@ export const HashtagErrorMessage = Object.freeze({
   MaxLength: `Максимальная длина одного хэштега должна быть ${HASHTAG_MAX_LENGTH} символов, включая решётку!`,
 });
 
+export const SUPPORTED_UPLOADING_PHOTO_FORMATS = Object.freeze(['jpg', 'jpeg', 'png']);
 export const PhotoFilter = Object.freeze({
   Chrome: Object.freeze({
     Template: (value) => `grayscale(${value})`,

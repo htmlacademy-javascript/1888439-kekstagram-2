@@ -10,6 +10,7 @@ import {
   MODAL_OPEN_CLASS,
   PhotoFilter,
   SCALE_PERCENT_INCREMENT,
+  SUPPORTED_UPLOADING_PHOTO_FORMATS,
   UploadAlertType
 } from '../constants.js';
 import { getElement } from '../element-cache.js';
@@ -128,10 +129,14 @@ const handleScaleChange = ({ target, currentTarget }) => {
   }
 
   const scaleInput = getElement('.scale__control--value', currentTarget);
+  const photoPreviewImg = getElement('.img-upload__preview img');
   const currentScale = parseInt(scaleInput.value, 10);
   const isIncrease = target.classList.contains('scale__control--bigger');
   const changedScale = currentScale + (isIncrease ? SCALE_PERCENT_INCREMENT : -SCALE_PERCENT_INCREMENT);
-  scaleInput.value = `${Math.max(MIN_SCALE_PERCENT, Math.min(changedScale, 100))}%`;
+  const normalizedScale = Math.max(MIN_SCALE_PERCENT, Math.min(changedScale, 100));
+
+  scaleInput.value = `${normalizedScale}%`;
+  photoPreviewImg.style.transform = `scale(${normalizedScale / 100})`;
 };
 
 /**
@@ -144,6 +149,10 @@ const openPhotoForm = () => {
   const hashtagsFieldElement = getElement('.text__hashtags', formOverlayElement);
   const closeFormButton = getElement('.img-upload__cancel', formOverlayElement);
   const scaleFieldElement = getElement('.img-upload__scale', formOverlayElement);
+  const uploadFileInput = getElement('#upload-file');
+  const photoPreviewElement = getElement('.img-upload__preview img');
+
+  photoPreviewElement.src = URL.createObjectURL(uploadFileInput.files[0]);
 
   validator = new Pristine(uploadFormElement, {
     classTo: 'img-upload__field-wrapper',
@@ -190,6 +199,7 @@ const closePhotoForm = () => {
   effectLevelInput.step = 'any';
   effectLevelInput.value = '';
   photoPreviewElement.style.filter = '';
+  photoPreviewElement.style.transform = '';
   scaleInput.value = '100%';
   sliderElement?.noUiSlider?.destroy();
 
@@ -264,6 +274,15 @@ async function handleFormSubmit(evt) {
  */
 const handleUploadImgInput = (evt) => {
   evt.preventDefault();
+
+  const file = evt.target.files[0];
+  const fileName = file.name.toLowerCase();
+
+  if (!SUPPORTED_UPLOADING_PHOTO_FORMATS.some((type) => fileName.endsWith(type))) {
+    evt.target.value = '';
+    return;
+  }
+
   openPhotoForm();
 };
 
