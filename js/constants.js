@@ -25,7 +25,7 @@ export const MIN_SCALE_PERCENT = 25;
 
 export const HASHTAG_MAX_LENGTH = 20;
 export const HASHTAG_MAX_COUNT = 5;
-export const HASHTAG_SEPARATOR = /\s/;
+export const HASHTAG_SEPARATOR = /\s+/;
 export const HASHTAG_REG_EXP = /^#[a-zа-яё0-9]+$/i;
 export const HashtagErrorMessage = Object.freeze({
   AllowedChars: 'Хэштеги после решётки должны состоять букв, чисел и разделяться пробелами!',
@@ -34,6 +34,7 @@ export const HashtagErrorMessage = Object.freeze({
   MaxLength: `Максимальная длина одного хэштега должна быть ${HASHTAG_MAX_LENGTH} символов, включая решётку!`,
 });
 
+export const SUPPORTED_UPLOADING_PHOTO_FORMATS = Object.freeze(['jpg', 'jpeg', 'png']);
 export const PhotoFilter = Object.freeze({
   Chrome: Object.freeze({
     Template: (value) => `grayscale(${value})`,
@@ -68,6 +69,8 @@ export const PhotoFilter = Object.freeze({
 });
 
 export const PHOTO_DESCRIPTION_MAX_LENGTH = 140;
+export const INVALID_PHOTO_DESCRIPTION_MESSAGE = `Длина комментария должна быть меньше ${PHOTO_DESCRIPTION_MAX_LENGTH} символов!`;
+
 export const USER_COMMENT_MAX_LENGTH = 140;
 
 export const FilterVariant = Object.freeze({

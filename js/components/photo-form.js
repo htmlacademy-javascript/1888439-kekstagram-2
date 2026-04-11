@@ -6,10 +6,13 @@ import {
   HASHTAG_SEPARATOR,
   HashtagErrorMessage,
   HIDE_ELEMENT_CLASS,
+  INVALID_PHOTO_DESCRIPTION_MESSAGE,
   MIN_SCALE_PERCENT,
   MODAL_OPEN_CLASS,
+  PHOTO_DESCRIPTION_MAX_LENGTH,
   PhotoFilter,
   SCALE_PERCENT_INCREMENT,
+  SUPPORTED_UPLOADING_PHOTO_FORMATS,
   UploadAlertType
 } from '../constants.js';
 import { getElement } from '../element-cache.js';
@@ -17,6 +20,8 @@ import { capitalize, interceptEscInsideInput, isContainsSomeClass, trimAndSplit 
 import { showUploadAlert } from './alert/upload-alert.js';
 
 let validator = null;
+/** @type {HTMLElement[]} */
+const filterPreviewElements = [];
 
 /** @type {[validator: (value: string) => boolean, message: string][]} */
 const hashtagValidators = [
@@ -53,6 +58,16 @@ const hashtagValidators = [
   ],
 ];
 
+/**
+ * Validates comment string length
+ *
+ * @param {string} rawCommentStr
+ */
+const validateDescriptionLength = (rawCommentStr) => {
+  const commentStr = rawCommentStr.trim();
+  return commentStr.length <= PHOTO_DESCRIPTION_MAX_LENGTH;
+};
+
 /** @typedef {typeof import('../constants.js').PhotoFilter} PhotoFilter */
 /**
  * Handles photo filters slider update
@@ -64,7 +79,7 @@ const handleSliderUpdate = (state, filter) => {
   const photoPreviewElement = getElement('.img-upload__preview img');
   const effectLevelElement = getElement('.img-upload__effect-level .effect-level__value');
 
-  effectLevelElement.value = state;
+  effectLevelElement.value = parseFloat(state);
   photoPreviewElement.style.filter = filter.Template(state);
 };
 
@@ -128,10 +143,14 @@ const handleScaleChange = ({ target, currentTarget }) => {
   }
 
   const scaleInput = getElement('.scale__control--value', currentTarget);
+  const photoPreviewImg = getElement('.img-upload__preview img');
   const currentScale = parseInt(scaleInput.value, 10);
   const isIncrease = target.classList.contains('scale__control--bigger');
   const changedScale = currentScale + (isIncrease ? SCALE_PERCENT_INCREMENT : -SCALE_PERCENT_INCREMENT);
-  scaleInput.value = `${Math.max(MIN_SCALE_PERCENT, Math.min(changedScale, 100))}%`;
+  const normalizedScale = Math.max(MIN_SCALE_PERCENT, Math.min(changedScale, 100));
+
+  scaleInput.value = `${normalizedScale}%`;
+  photoPreviewImg.style.transform = `scale(${normalizedScale / 100})`;
 };
 
 /**
@@ -144,6 +163,19 @@ const openPhotoForm = () => {
   const hashtagsFieldElement = getElement('.text__hashtags', formOverlayElement);
   const closeFormButton = getElement('.img-upload__cancel', formOverlayElement);
   const scaleFieldElement = getElement('.img-upload__scale', formOverlayElement);
+  const uploadFileInput = getElement('#upload-file');
+  const photoPreviewElement = getElement('.img-upload__preview img');
+  const descriptionInput = getElement('.text__description', formOverlayElement);
+
+  if (filterPreviewElements.length <= 0) {
+    filterPreviewElements.push(...formFiltersElement.querySelectorAll('.effects__preview'));
+  }
+
+  const imageUrlObject = URL.createObjectURL(uploadFileInput.files[0]);
+  photoPreviewElement.src = imageUrlObject;
+  filterPreviewElements.forEach((element) => {
+    element.style.backgroundImage = `url('${imageUrlObject}')`;
+  });
 
   validator = new Pristine(uploadFormElement, {
     classTo: 'img-upload__field-wrapper',
@@ -154,6 +186,7 @@ const openPhotoForm = () => {
   hashtagValidators.forEach((hashtagValidator) => {
     validator.addValidator(hashtagsFieldElement, ...hashtagValidator);
   });
+  validator.addValidator(descriptionInput, validateDescriptionLength, INVALID_PHOTO_DESCRIPTION_MESSAGE);
 
   formFiltersElement.addEventListener('change', handleChangeFilter);
   closeFormButton.addEventListener('click', handleCloseClick);
@@ -190,8 +223,12 @@ const closePhotoForm = () => {
   effectLevelInput.step = 'any';
   effectLevelInput.value = '';
   photoPreviewElement.style.filter = '';
+  photoPreviewElement.style.transform = '';
   scaleInput.value = '100%';
   sliderElement?.noUiSlider?.destroy();
+  filterPreviewElements.forEach((element) => {
+    element.style.backgroundImage = '';
+  });
 
   formFiltersElement.removeEventListener('change', handleChangeFilter);
   closeFormButton.removeEventListener('click', handleCloseClick);
@@ -240,9 +277,13 @@ async function handleFormSubmit(evt) {
 
   const formData = new FormData(evt.target);
 
+  const submitButton = getElement('#upload-submit', evt.target);
+  submitButton.disabled = true;
+
   window.removeEventListener('keydown', handleEscKeydown);
   const addWindowEscKeydownHandler = () => {
     window.addEventListener('keydown', handleEscKeydown);
+    submitButton.disabled = false;
   };
 
   try {
@@ -252,7 +293,7 @@ async function handleFormSubmit(evt) {
     return;
   }
 
-  showUploadAlert(UploadAlertType.Success);
+  showUploadAlert(UploadAlertType.Success, addWindowEscKeydownHandler);
   closePhotoForm();
 }
 
@@ -264,6 +305,15 @@ async function handleFormSubmit(evt) {
  */
 const handleUploadImgInput = (evt) => {
   evt.preventDefault();
+
+  const file = evt.target.files[0];
+  const fileName = file.name.toLowerCase();
+
+  if (!SUPPORTED_UPLOADING_PHOTO_FORMATS.some((type) => fileName.endsWith(type))) {
+    evt.target.value = '';
+    return;
+  }
+
   openPhotoForm();
 };
 
