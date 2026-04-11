@@ -6,8 +6,10 @@ import {
   HASHTAG_SEPARATOR,
   HashtagErrorMessage,
   HIDE_ELEMENT_CLASS,
+  INVALID_PHOTO_DESCRIPTION_MESSAGE,
   MIN_SCALE_PERCENT,
   MODAL_OPEN_CLASS,
+  PHOTO_DESCRIPTION_MAX_LENGTH,
   PhotoFilter,
   SCALE_PERCENT_INCREMENT,
   SUPPORTED_UPLOADING_PHOTO_FORMATS,
@@ -18,6 +20,8 @@ import { capitalize, interceptEscInsideInput, isContainsSomeClass, trimAndSplit 
 import { showUploadAlert } from './alert/upload-alert.js';
 
 let validator = null;
+/** @type {HTMLElement[]} */
+const filterPreviewElements = [];
 
 /** @type {[validator: (value: string) => boolean, message: string][]} */
 const hashtagValidators = [
@@ -54,6 +58,16 @@ const hashtagValidators = [
   ],
 ];
 
+/**
+ * Validates comment string length
+ *
+ * @param {string} rawCommentStr
+ */
+const validateDescriptionLength = (rawCommentStr) => {
+  const commentStr = rawCommentStr.trim();
+  return commentStr.length <= PHOTO_DESCRIPTION_MAX_LENGTH;
+};
+
 /** @typedef {typeof import('../constants.js').PhotoFilter} PhotoFilter */
 /**
  * Handles photo filters slider update
@@ -65,7 +79,7 @@ const handleSliderUpdate = (state, filter) => {
   const photoPreviewElement = getElement('.img-upload__preview img');
   const effectLevelElement = getElement('.img-upload__effect-level .effect-level__value');
 
-  effectLevelElement.value = state;
+  effectLevelElement.value = parseFloat(state);
   photoPreviewElement.style.filter = filter.Template(state);
 };
 
@@ -151,8 +165,17 @@ const openPhotoForm = () => {
   const scaleFieldElement = getElement('.img-upload__scale', formOverlayElement);
   const uploadFileInput = getElement('#upload-file');
   const photoPreviewElement = getElement('.img-upload__preview img');
+  const descriptionInput = getElement('.text__description', formOverlayElement);
 
-  photoPreviewElement.src = URL.createObjectURL(uploadFileInput.files[0]);
+  if (filterPreviewElements.length <= 0) {
+    filterPreviewElements.push(...formFiltersElement.querySelectorAll('.effects__preview'));
+  }
+
+  const imageUrlObject = URL.createObjectURL(uploadFileInput.files[0]);
+  photoPreviewElement.src = imageUrlObject;
+  filterPreviewElements.forEach((element) => {
+    element.style.backgroundImage = `url('${imageUrlObject}')`;
+  });
 
   validator = new Pristine(uploadFormElement, {
     classTo: 'img-upload__field-wrapper',
@@ -163,6 +186,7 @@ const openPhotoForm = () => {
   hashtagValidators.forEach((hashtagValidator) => {
     validator.addValidator(hashtagsFieldElement, ...hashtagValidator);
   });
+  validator.addValidator(descriptionInput, validateDescriptionLength, INVALID_PHOTO_DESCRIPTION_MESSAGE);
 
   formFiltersElement.addEventListener('change', handleChangeFilter);
   closeFormButton.addEventListener('click', handleCloseClick);
@@ -202,6 +226,9 @@ const closePhotoForm = () => {
   photoPreviewElement.style.transform = '';
   scaleInput.value = '100%';
   sliderElement?.noUiSlider?.destroy();
+  filterPreviewElements.forEach((element) => {
+    element.style.backgroundImage = '';
+  });
 
   formFiltersElement.removeEventListener('change', handleChangeFilter);
   closeFormButton.removeEventListener('click', handleCloseClick);
@@ -250,9 +277,13 @@ async function handleFormSubmit(evt) {
 
   const formData = new FormData(evt.target);
 
+  const submitButton = getElement('#upload-submit', evt.target);
+  submitButton.disabled = true;
+
   window.removeEventListener('keydown', handleEscKeydown);
   const addWindowEscKeydownHandler = () => {
     window.addEventListener('keydown', handleEscKeydown);
+    submitButton.disabled = false;
   };
 
   try {
@@ -262,7 +293,7 @@ async function handleFormSubmit(evt) {
     return;
   }
 
-  showUploadAlert(UploadAlertType.Success);
+  showUploadAlert(UploadAlertType.Success, addWindowEscKeydownHandler);
   closePhotoForm();
 }
 
