@@ -5,6 +5,7 @@ import { closePhotoViewer, openPhotoViewer } from '../../../js/components/photo-
 import { fillSocial } from '../../../js/components/social.js';
 import { HIDE_ELEMENT_CLASS, MIN_FAKE_PHOTO_ID, MODAL_OPEN_CLASS } from '../../../js/constants.js';
 import { generateFakePost } from '../../fake-data.js';
+import { resetCache } from '../../../js/element-cache.js';
 
 const photoViewTestId = 'big-picture';
 const closePhotoViewTestId = 'close-photo-view';
@@ -43,6 +44,7 @@ describe('should be correct DOM changes', () => {
     document.body.innerHTML = '';
     document.body.className = '';
     vi.restoreAllMocks();
+    resetCache();
   });
 
   test('when photo view modal is opens', () => {
@@ -93,6 +95,7 @@ describe('should events be handled correctly', () => {
     document.body.innerHTML = '';
     document.body.className = '';
     vi.restoreAllMocks();
+    resetCache();
   });
 
   test('when user press to escape', async () => {

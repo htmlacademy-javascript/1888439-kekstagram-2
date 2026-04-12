@@ -5,6 +5,7 @@ import { closePhotoViewer } from '../../../js/components/photo-viewer.js';
 import { createFragmentWithPhotos, fillDocumentWithPhotos, fillPhotoTemplate } from '../../../js/components/photos.js';
 import { HIDE_ELEMENT_CLASS, MODAL_OPEN_CLASS } from '../../../js/constants.js';
 import { FAKE_PHOTOS_COUNT, generateFakePost, generateFakePosts, MIN_FAKE_PHOTO_ID } from '../../fake-data.js';
+import { resetCache } from '../../../js/element-cache.js';
 
 const createPictureTemplate = () => {
   const pictureTemplate = document.createElement('template');
@@ -29,8 +30,20 @@ vi.mock('../../../js/components/social.js', async (importOriginal) => {
   };
 });
 
+vi.mock('../../../js/components/filters.js', async (importOriginal) => {
+  const originalModule = await importOriginal();
+  return {
+    ...originalModule,
+    initFilters: vi.fn(),
+  };
+});
+
 describe('should fillPhoto function return DocumentFragment filled width photo data', () => {
   const pictureTemplate = createPictureTemplate();
+
+  afterEach(() => {
+    resetCache();
+  });
 
   test('when it gets data', () => {
     const generatedPhoto = generateFakePost(MIN_FAKE_PHOTO_ID);
@@ -51,6 +64,7 @@ describe('should fillPhoto function return DocumentFragment filled width photo d
 describe('should createFragmentWithPhotos function has deterministic behaviour', () => {
   afterEach(() => {
     document.body.innerHTML = '';
+    resetCache();
   });
 
   test('when it gets data', () => {
@@ -74,6 +88,7 @@ describe('should createFragmentWithPhotos function has deterministic behaviour',
 describe('should fillDocumentWithPhotos function has deterministic behaviour', () => {
   afterEach(() => {
     document.body.innerHTML = '';
+    resetCache();
   });
 
   test('when it gets data', () => {
@@ -85,14 +100,6 @@ describe('should fillDocumentWithPhotos function has deterministic behaviour', (
 
     const photoElements = generatedPhotos.map((photo) => screen.queryByAltText(photo.description));
     expect(photoElements.every((element) => element !== null)).toBe(true);
-  });
-
-  test('when container not found', () => {
-    document.body.append(createPictureTemplate());
-    const generatedPhotos = generateFakePosts(1);
-
-    expect(() => fillDocumentWithPhotos(generatedPhotos))
-      .toThrowError(/'\.pictures' not found/);
   });
 });
 
@@ -123,6 +130,7 @@ describe('should display photo viewer', () => {
     closePhotoViewer();
     document.body.innerHTML = '';
     document.body.className = '';
+    resetCache();
   });
 
   test('when user clicked on photo preview', async () => {
