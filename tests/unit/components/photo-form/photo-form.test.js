@@ -19,6 +19,7 @@ describe('should be correct DOM changes', () => {
     vi.stubGlobal('Pristine', PristineMock);
     vi.spyOn(window, 'addEventListener').mockImplementationOnce();
     vi.spyOn(window, 'removeEventListener').mockImplementationOnce();
+    window.URL.createObjectURL = () => 'url';
   });
 
   afterEach(() => {
@@ -26,6 +27,7 @@ describe('should be correct DOM changes', () => {
     document.body.className = '';
     vi.restoreAllMocks();
     vi.unstubAllGlobals();
+    delete window.URL.createObjectURL;
     resetCache();
   });
 

@@ -1,14 +1,16 @@
 import { readFile } from 'node:fs/promises';
 import { URL as NodeURL } from 'node:url';
-import { getAllByRole, queryByText, screen } from '@testing-library/dom';
+import { getAllByRole, getByRole, queryByText, screen } from '@testing-library/dom';
 import userEvent from '@testing-library/user-event';
 import { afterEach, beforeAll, beforeEach, describe, expect, test, vi } from 'vitest';
+import { uploadPhoto } from '../../js/api.js';
 import { closePhotoForm, handleUploadImgInput } from '../../js/components/photo-form.js';
 import {
   HASHTAG_MAX_COUNT,
   HASHTAG_MAX_LENGTH,
   HashtagErrorMessage,
   HIDE_ELEMENT_CLASS,
+  INVALID_PHOTO_DESCRIPTION_MESSAGE,
   MODAL_OPEN_CLASS,
   PhotoFilter,
   SCALE_PERCENT_INCREMENT,
@@ -17,7 +19,6 @@ import {
 import { resetCache } from '../../js/element-cache.js';
 import { capitalize, getRandomInt } from '../../js/utils.js';
 import { getScript } from '../helpers.js';
-import { uploadPhoto } from '../../js/api.js';
 
 vi.mock('../../js/api.js', async (importOriginal) => {
   const originalModule = await importOriginal();
@@ -37,31 +38,40 @@ describe('should upload photo form component has correct behaviour', () => {
   beforeAll(async () => {
     const pathToTemplate = new NodeURL('./index-page.template.html', import.meta.url);
     html = await readFile(pathToTemplate, { encoding: 'utf-8' });
+
     const pathToPristineSrc = new NodeURL('../../vendor/pristine/pristine.min.js', import.meta.url);
     pristineElement = await getScript(pathToPristineSrc);
+
     const pathToNoUiSlider = new NodeURL('../../vendor/nouislider/nouislider.js', import.meta.url);
     noUiSliderElement = await getScript(pathToNoUiSlider);
   });
 
-  beforeEach(() => {
+  beforeEach(async () => {
     document.head.append(pristineElement);
     document.head.append(noUiSliderElement);
     document.body.innerHTML = html;
+
     const uploadInput = screen.getByTestId('photo-upload-input');
     uploadInput.addEventListener('change', handleUploadImgInput);
+
     window.Pristine = window.jsdom.window.Pristine;
     window.noUiSlider = window.jsdom.window.noUiSlider;
+    window.URL.createObjectURL = () => 'url';
   });
 
-  afterEach(() => {
+  afterEach(async () => {
     closePhotoForm();
+
     document.head.innerHTML = '';
     document.body.innerHTML = '';
     document.body.className = '';
+
     vi.resetAllMocks();
     resetCache();
+
     delete window.Pristine;
     delete window.noUiSlider;
+    delete window.URL.createObjectURL;
   });
 
   test('when user tries to upload photo', async () => {
@@ -144,12 +154,19 @@ describe('should upload photo form component has correct behaviour', () => {
     expect(commentInputElement).toHaveValue(validComment);
     await user.clear(commentInputElement);
     await user.type(commentInputElement, `${validComment}b`);
-    expect(commentInputElement.value).toHaveLength(USER_COMMENT_MAX_LENGTH);
-    expect(commentInputElement).toHaveValue(validComment);
+    expect(queryByText(textFieldset, (text) => text.includes(INVALID_PHOTO_DESCRIPTION_MESSAGE))).toBeInTheDocument();
+    await user.clear(commentInputElement);
 
     const submitButton = screen.getByTestId('photo-upload-submit');
     await user.click(submitButton);
     expect(mockedUploadPhoto).toBeCalledTimes(1);
+
+    const successAlert = screen.queryByTestId('upload-success-alert');
+    expect(successAlert).toBeInTheDocument();
+
+    const alertButton = getByRole(successAlert, 'button');
+    await user.click(alertButton);
+    expect(successAlert).not.toBeInTheDocument();
   }, { timeout: 10_000 });
 
   test('when user opens and closes form', async () => {

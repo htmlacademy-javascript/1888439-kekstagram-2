@@ -4,6 +4,7 @@ import { afterEach, beforeEach, describe, expect, test } from 'vitest';
 import { createFragmentWithComments, fillComment, fillSocial } from '../../../js/components/social.js';
 import { HIDE_ELEMENT_CLASS, LOAD_MORE_INCREMENT } from '../../../js/constants.js';
 import { generateFakeComment, generateFakePost, MIN_FAKE_COMMENT_ID, MIN_FAKE_PHOTO_ID} from '../../fake-data.js';
+import { resetCache } from '../../../js/element-cache.js';
 
 const createCommentTemplate = () => {
   const commentTemplate = document.createElement('template');
@@ -18,6 +19,10 @@ const createCommentTemplate = () => {
 };
 
 describe('should fillComment function return DocumentFragment filled width comment data', () => {
+  afterEach(() => {
+    resetCache();
+  });
+
   test('when it gets data', () => {
     const fakeComment = generateFakeComment(MIN_FAKE_COMMENT_ID);
     const commentTemplate = createCommentTemplate();
@@ -36,6 +41,7 @@ describe('should fillComment function return DocumentFragment filled width comme
 describe('should createFragmentWithComments function has deterministic behaviour', () => {
   afterEach(() => {
     document.body.innerHTML = '';
+    resetCache();
   });
 
   test('when it gets data', () => {
@@ -108,6 +114,7 @@ describe('should fillSocial function has deterministic behaviour', () => {
 
   afterEach(() => {
     document.body.innerHTML = '';
+    resetCache();
   });
 
   test(`when it gets photo with LOAD_MORE_INCREMENT(${LOAD_MORE_INCREMENT}) comments`, () => {
