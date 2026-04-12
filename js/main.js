@@ -7,14 +7,10 @@ import { getElement } from './element-cache.js';
 const imgUploadElement = getElement('.img-upload__input');
 imgUploadElement.addEventListener('change', handleUploadImgInput);
 
-/** @type {import('./api.js').Photo[] | null} */
-let photos = null;
 try {
-  photos = await getPhotos();
+  /** @type {import('./api.js').Photo[] | null} */
+  const photos = await getPhotos();
+  fillDocumentWithPhotos(photos);
 } catch {
   showDownloadErrorAlert();
-}
-
-if (photos) {
-  fillDocumentWithPhotos(photos);
 }

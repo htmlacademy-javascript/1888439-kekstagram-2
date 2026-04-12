@@ -19,6 +19,16 @@ import { getElement } from '../element-cache.js';
 import { capitalize, interceptEscInsideInput, isContainsSomeClass, trimAndSplit } from '../utils.js';
 import { showUploadAlert } from './alert/upload-alert.js';
 
+/**
+ * @typedef Pristine
+ *
+ * @property addValidator
+ * @property destroy
+ * @property validate
+ * */
+
+
+/** @type {Pristine|null} */
 let validator = null;
 /** @type {HTMLElement[]} */
 const filterPreviewElements = [];

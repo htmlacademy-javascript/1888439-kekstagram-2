@@ -66,12 +66,11 @@ const fillPhotoTemplate = (photoTemplate, photo) => {
 const createFragmentWithPhotos = (photos) => {
   /** @type {HTMLTemplateElement} */
   const photoTemplate = selectOrThrow('#picture');
-  const fragment = createFragmentWith(
+
+  return createFragmentWith(
     photos,
     (photo) => fillPhotoTemplate(photoTemplate.content, photo),
   );
-
-  return fragment;
 };
 
 /**
