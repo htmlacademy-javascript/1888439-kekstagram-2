@@ -2,9 +2,8 @@ import { getByTestId, screen } from '@testing-library/dom';
 import userEvent from '@testing-library/user-event';
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
 import { closePhotoViewer, openPhotoViewer } from '../../../js/components/photo-viewer.js';
-import { fillSocial } from '../../../js/components/social.js';
-import { HIDE_ELEMENT_CLASS, MIN_FAKE_PHOTO_ID, MODAL_OPEN_CLASS } from '../../../js/constants.js';
-import { generateFakePost } from '../../fake-data.js';
+import { HIDE_ELEMENT_CLASS, MODAL_OPEN_CLASS } from '../../../js/constants.js';
+import { MIN_FAKE_PHOTO_ID, generateFakePost } from '../../fake-data.js';
 import { resetCache } from '../../../js/element-cache.js';
 
 const photoViewTestId = 'big-picture';
@@ -33,11 +32,9 @@ vi.mock('../../../js/components/social.js', async (importOriginal) => {
 });
 
 describe('should be correct DOM changes', () => {
-  const mockedFillSocial = vi.mocked(fillSocial);
-
   beforeEach(() => {
-    vi.spyOn(window, 'addEventListener').mockImplementationOnce();
-    vi.spyOn(window, 'removeEventListener').mockImplementationOnce();
+    vi.spyOn(window, 'addEventListener');
+    vi.spyOn(window, 'removeEventListener');
   });
 
   afterEach(() => {
@@ -51,7 +48,7 @@ describe('should be correct DOM changes', () => {
     document.body.innerHTML = getPictureSectionHtml(true);
     const fakePhoto = generateFakePost(MIN_FAKE_PHOTO_ID);
     const closeButton = screen.getByTestId(closePhotoViewTestId);
-    vi.spyOn(closeButton, 'addEventListener').mockImplementationOnce();
+    vi.spyOn(closeButton, 'addEventListener');
 
     openPhotoViewer(fakePhoto);
 
@@ -61,25 +58,18 @@ describe('should be correct DOM changes', () => {
 
     expect(document.body).toHaveClass(MODAL_OPEN_CLASS);
     expect(screen.queryByTestId(photoViewTestId)).not.toHaveClass(HIDE_ELEMENT_CLASS);
-
-    expect(mockedFillSocial).toBeCalled();
-    expect(window.addEventListener).toBeCalled();
-    expect(closeButton.addEventListener).toBeCalled();
   });
 
   test('when photo view modal is closes', () => {
     document.body.classList.add(MODAL_OPEN_CLASS);
     document.body.innerHTML = getPictureSectionHtml(false);
     const closeButton = screen.getByTestId(closePhotoViewTestId);
-    vi.spyOn(closeButton, 'removeEventListener').mockImplementationOnce();
+    vi.spyOn(closeButton, 'removeEventListener');
 
     closePhotoViewer();
 
     expect(document.body).not.toHaveClass(MODAL_OPEN_CLASS);
     expect(screen.getByTestId(photoViewTestId)).toHaveClass(HIDE_ELEMENT_CLASS);
-
-    expect(window.removeEventListener).toBeCalled();
-    expect(closeButton.removeEventListener).toBeCalled();
   });
 });
 

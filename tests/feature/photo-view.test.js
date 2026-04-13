@@ -50,11 +50,10 @@ describe('should photo view component has correct behaviour', () => {
         { name: (name) => name.includes(photo.description) }
       ),
     );
-    expect(photoThumbnails.every((thumbnail) => thumbnail !== null)).toBe(true);
+    expect(photoThumbnails.every(Boolean)).toBeTruthy();
 
     const photoViewElement = screen.getByTestId('photo-view');
     expect(photoViewElement).toBeDefined();
-
     expect(photoViewElement).toHaveClass(HIDE_ELEMENT_CLASS);
     expect(document.body).not.toHaveClass(MODAL_OPEN_CLASS);
 

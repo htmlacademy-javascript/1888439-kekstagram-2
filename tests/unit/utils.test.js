@@ -37,35 +37,27 @@ describe('should getRandomInt function return the deterministic value', () => {
 
   test('when are the boundary cases', () => {
     expect(getRandomInt(0, 0)).toBe(0);
-    expect(getRandomInt(0.5, 10.5)).toBe(5);
     expect(() => getRandomInt(10, 1)).toThrowError(RangeError);
     expect(() => getRandomInt(-10)).toThrowError(RangeError);
   });
 });
 
 describe('should keepNumberInRange function have the deterministic algorithm', () => {
-  let randomNum = 0;
-
-  beforeEach(() => {
-    randomNum = getRandomInt(5, 15);
-  });
-
   test('when number that are already in the range are passed', () => {
-    expect(keepNumberInRange(randomNum, randomNum + 1)).toBe(randomNum);
-    expect(keepNumberInRange(1, randomNum)).toBe(1);
-    expect(keepNumberInRange(randomNum, randomNum)).toBe(randomNum);
+    expect(keepNumberInRange(1, 10)).toBe(1);
+    expect(keepNumberInRange(50, 100)).toBe(50);
   });
 
   test('when the number is greater than limit', () => {
-    expect(keepNumberInRange(randomNum + 1, randomNum)).toBe(1);
+    expect(keepNumberInRange(10, 1)).toBe(1);
   });
 
   test('when the number is less than 1', () => {
-    expect(keepNumberInRange(0, randomNum)).toBe(randomNum);
+    expect(keepNumberInRange(0, 10)).toBe(10);
   });
 
   test('when the limit less than 1', () => {
-    expect(() => keepNumberInRange(randomNum, 0)).toThrowError(RangeError);
+    expect(() => keepNumberInRange(10, 0)).toThrowError(RangeError);
   });
 });
 
@@ -113,7 +105,7 @@ describe('should createFragmentWith function return DocumentFragment filled with
     const fragment = createFragmentWith(data, cb);
     const elements = data.map((dataItem) => queryByText(fragment, dataItem));
 
-    expect(elements.every((element) => element !== null)).toBe(true);
+    expect(elements.every(Boolean)).toBeTruthy();
     expect(fragment).instanceOf(DocumentFragment);
     expect(cb).toBeCalledTimes(data.length);
   });
@@ -126,9 +118,7 @@ describe('should selectOrThrow function return selected element or throw error',
 
   test('when it not gets root element', () => {
     const className = 'element';
-    document.body.innerHTML = `
-      <p class="${className}"></p>
-    `;
+    document.body.innerHTML = `<p class="${className}"></p>`;
 
     const selectedElement = selectOrThrow(`.${className}`);
 

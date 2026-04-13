@@ -68,6 +68,7 @@ export const createFragmentWith = (data, fillCb) => {
     data.forEach((dataItem) => {
       fragment.append(fillCb(dataItem));
     });
+
     return fragment;
   }
 

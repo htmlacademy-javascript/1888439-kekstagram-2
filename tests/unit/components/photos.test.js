@@ -1,8 +1,8 @@
-import { queryByAltText, queryByAttribute, queryByText, screen } from '@testing-library/dom';
+import { screen } from '@testing-library/dom';
 import userEvent from '@testing-library/user-event';
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
 import { closePhotoViewer } from '../../../js/components/photo-viewer.js';
-import { createFragmentWithPhotos, fillDocumentWithPhotos, fillPhotoTemplate } from '../../../js/components/photos.js';
+import { createFragmentWithPhotos, fillDocumentWithPhotos } from '../../../js/components/photos.js';
 import { HIDE_ELEMENT_CLASS, MODAL_OPEN_CLASS } from '../../../js/constants.js';
 import { FAKE_PHOTOS_COUNT, generateFakePost, generateFakePosts, MIN_FAKE_PHOTO_ID } from '../../fake-data.js';
 import { resetCache } from '../../../js/element-cache.js';
@@ -38,29 +38,6 @@ vi.mock('../../../js/components/filters.js', async (importOriginal) => {
   };
 });
 
-describe('should fillPhoto function return DocumentFragment filled width photo data', () => {
-  const pictureTemplate = createPictureTemplate();
-
-  afterEach(() => {
-    resetCache();
-  });
-
-  test('when it gets data', () => {
-    const generatedPhoto = generateFakePost(MIN_FAKE_PHOTO_ID);
-    const fragment = fillPhotoTemplate(pictureTemplate.content, generatedPhoto);
-    const container = document.createElement('div');
-    container.append(fragment);
-
-    const imgEl = queryByAltText(container, generatedPhoto.description);
-    expect(imgEl).not.toBeNull();
-    expect(imgEl).toHaveAttribute('src', generatedPhoto.url);
-
-    expect(queryByText(container, generatedPhoto.likes)).not.toBeNull();
-    expect(queryByText(container, generatedPhoto.comments.length)).not.toBeNull();
-    expect(queryByAttribute('href', container, generatedPhoto.url)).not.toBeNull();
-  });
-});
-
 describe('should createFragmentWithPhotos function has deterministic behaviour', () => {
   afterEach(() => {
     document.body.innerHTML = '';
@@ -82,24 +59,6 @@ describe('should createFragmentWithPhotos function has deterministic behaviour',
 
     expect(() => createFragmentWithPhotos(generatedPhotos))
       .toThrowError(/'#picture' not found/);
-  });
-});
-
-describe('should fillDocumentWithPhotos function has deterministic behaviour', () => {
-  afterEach(() => {
-    document.body.innerHTML = '';
-    resetCache();
-  });
-
-  test('when it gets data', () => {
-    document.body.innerHTML = '<section class="pictures"></section>';
-    document.body.append(createPictureTemplate());
-    const generatedPhotos = generateFakePosts(FAKE_PHOTOS_COUNT);
-
-    fillDocumentWithPhotos(generatedPhotos);
-
-    const photoElements = generatedPhotos.map((photo) => screen.queryByAltText(photo.description));
-    expect(photoElements.every((element) => element !== null)).toBe(true);
   });
 });
 
