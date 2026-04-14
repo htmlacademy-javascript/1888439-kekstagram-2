@@ -4,7 +4,7 @@ import { getAllByRole, getByRole, queryByText, screen } from '@testing-library/d
 import userEvent from '@testing-library/user-event';
 import { afterEach, beforeAll, beforeEach, describe, expect, test, vi } from 'vitest';
 import { uploadPhoto } from '../../js/api.js';
-import { closePhotoForm, handleUploadImgInput } from '../../js/components/photo-form.js';
+import { closePhotoForm, imgInputUploadHandler } from '../../js/components/photo-form.js';
 import {
   HASHTAG_MAX_COUNT,
   HASHTAG_MAX_LENGTH,
@@ -52,7 +52,7 @@ describe('should upload photo form component has correct behaviour', () => {
     document.body.innerHTML = html;
 
     const uploadInput = screen.getByTestId('photo-upload-input');
-    uploadInput.addEventListener('change', handleUploadImgInput);
+    uploadInput.addEventListener('change', imgInputUploadHandler);
 
     window.Pristine = window.jsdom.window.Pristine;
     window.noUiSlider = window.jsdom.window.noUiSlider;
@@ -111,7 +111,7 @@ describe('should upload photo form component has correct behaviour', () => {
     await user.click(randomEffect);
     expect(effectLevelElement).toHaveValue(filter.Max);
     expect(effectLevelElement).not.toHaveAttribute('step', filter.Step);
-    expect(photoPreviewElement.style.filter).not.toBe(filter.Template(filter.Max));
+    expect(photoPreviewElement.style.filter).not.toBe(filter.FillTemplate(filter.Max));
 
     const noneEffect = effectElements.find((element) => element.value === 'none');
     await user.click(noneEffect);

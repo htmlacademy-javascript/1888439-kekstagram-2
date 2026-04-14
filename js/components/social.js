@@ -73,7 +73,7 @@ const appendComments = (rootEl) => {
   shownCommentsEl.textContent = Math.min(shownCommentsPosition, currentComments.length);
 
   if (shownCommentsPosition >= currentComments.length) {
-    commentsLoaderBtn.removeEventListener('click', handleClickMoreButton);
+    commentsLoaderBtn.removeEventListener('click', moreButtonClickHandler);
     commentsLoaderBtn.classList.add(HIDE_ELEMENT_CLASS);
   }
 };
@@ -106,7 +106,7 @@ const fillSocial = (rootEl, photo) => {
 
   if (shownCommentsPosition < currentComments.length) {
     commentsLoaderBtn.classList.remove(HIDE_ELEMENT_CLASS);
-    commentsLoaderBtn.addEventListener('click', handleClickMoreButton);
+    commentsLoaderBtn.addEventListener('click', moreButtonClickHandler);
     return;
   }
 
@@ -118,7 +118,7 @@ const fillSocial = (rootEl, photo) => {
  *
  * @param {MouseEvent} evt
  */
-function handleClickMoreButton(evt) {
+function moreButtonClickHandler(evt) {
   evt.preventDefault();
   const socialEl = evt.target.closest('.social');
   appendComments(socialEl);

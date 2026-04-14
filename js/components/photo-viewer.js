@@ -22,10 +22,10 @@ const openPhotoViewer = (photo) => {
   imgEl.alt = photo.description;
   photoViewerEl.addEventListener('keydown', interceptEscInsideInput);
   photoViewerEl.classList.remove(HIDE_ELEMENT_CLASS);
-  closeBtn.addEventListener('click', handleCloseClick);
+  closeBtn.addEventListener('click', closeButtonClickHandler);
 
   document.body.classList.add(MODAL_OPEN_CLASS);
-  window.addEventListener('keydown', handleEscKeydown);
+  window.addEventListener('keydown', windowEscKeydownHandler);
 };
 
 /**
@@ -38,10 +38,10 @@ const closePhotoViewer = () => {
 
   photoViewerEl.removeEventListener('keydown', interceptEscInsideInput);
   photoViewerEl.classList.add(HIDE_ELEMENT_CLASS);
-  closeBtn.removeEventListener('click', handleCloseClick);
+  closeBtn.removeEventListener('click', closeButtonClickHandler);
 
   document.body.classList.remove(MODAL_OPEN_CLASS);
-  window.removeEventListener('keydown', handleEscKeydown);
+  window.removeEventListener('keydown', windowEscKeydownHandler);
 };
 
 /**
@@ -49,7 +49,7 @@ const closePhotoViewer = () => {
  *
  * @param {KeyboardEvent} evt
  */
-function handleEscKeydown(evt) {
+function windowEscKeydownHandler(evt) {
   if (evt.code === 'Escape') {
     closePhotoViewer();
   }
@@ -60,7 +60,7 @@ function handleEscKeydown(evt) {
  *
  * @param {MouseEvent} evt
  */
-function handleCloseClick(evt) {
+function closeButtonClickHandler(evt) {
   evt.preventDefault();
   closePhotoViewer();
 }

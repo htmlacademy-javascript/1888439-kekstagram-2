@@ -37,31 +37,31 @@ export const HashtagErrorMessage = Object.freeze({
 export const SUPPORTED_UPLOADING_PHOTO_FORMATS = Object.freeze(['jpg', 'jpeg', 'png']);
 export const PhotoFilter = Object.freeze({
   Chrome: Object.freeze({
-    Template: (value) => `grayscale(${value})`,
+    FillTemplate: (value) => `grayscale(${value})`,
     Min: 0,
     Max: 1,
     Step: 0.1,
   }),
   Sepia: Object.freeze({
-    Template: (value) => `sepia(${value})`,
+    FillTemplate: (value) => `sepia(${value})`,
     Min: 0,
     Max: 1,
     Step: 0.1,
   }),
   Marvin: Object.freeze({
-    Template: (value) => `invert(${value}%)`,
+    FillTemplate: (value) => `invert(${value}%)`,
     Min: 0,
     Max: 100,
     Step: 1,
   }),
   Phobos: Object.freeze({
-    Template: (value) => `blur(${value}px)`,
+    FillTemplate: (value) => `blur(${value}px)`,
     Min: 0,
     Max: 3,
     Step: 0.1,
   }),
   Heat: Object.freeze({
-    Template: (value) => `brightness(${value})`,
+    FillTemplate: (value) => `brightness(${value})`,
     Min: 1,
     Max: 3,
     Step: 0.1,
