@@ -18,8 +18,8 @@ let handlePostClose = () => {};
  */
 const closeUploadAlert = () => {
   alertElement?.remove();
-  window.removeEventListener('keydown', handleEscKeydown);
-  document.removeEventListener('click', handleClick);
+  window.removeEventListener('keydown', windowEscKeydownHandler);
+  document.removeEventListener('click', outsideClickHandler);
   handlePostClose();
 
   alertElement = null;
@@ -47,8 +47,8 @@ const showUploadAlert = (type, postCloseAction = (() => {})) => {
   handlePostClose = postCloseAction;
 
   document.body.append(alertElement);
-  window.addEventListener('keydown', handleEscKeydown);
-  document.addEventListener('click', handleClick);
+  window.addEventListener('keydown', windowEscKeydownHandler);
+  document.addEventListener('click', outsideClickHandler);
 };
 
 /**
@@ -56,7 +56,7 @@ const showUploadAlert = (type, postCloseAction = (() => {})) => {
  *
  * @param {KeyboardEvent} evt
  */
-function handleEscKeydown(evt) {
+function windowEscKeydownHandler(evt) {
   if (evt.code === 'Escape') {
     closeUploadAlert();
   }
@@ -66,7 +66,7 @@ function handleEscKeydown(evt) {
  *
  * @param {MouseEvent} evt
  */
-function handleClick(evt) {
+function outsideClickHandler(evt) {
   evt.preventDefault();
   const buttonClasses = Object.values(UploadAlertType).map(
     (type) => `${type}__button`

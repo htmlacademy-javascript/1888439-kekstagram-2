@@ -23,7 +23,7 @@ const filters = {
  * @param {MouseEvent} evt
  * @param {Photo} photo
  */
-const handlePhotoClick = (evt, photo) => {
+const photoClickHandler = (evt, photo) => {
   evt.preventDefault();
   openPhotoViewer(photo);
 };
@@ -48,7 +48,7 @@ const fillPhotoTemplate = (photoTemplate, photo) => {
   const likesCountEl = photoElement.querySelector('.picture__likes');
 
   anchorEl.href = photo.url;
-  anchorEl.addEventListener('click', (evt) => handlePhotoClick(evt, photo));
+  anchorEl.addEventListener('click', (evt) => photoClickHandler(evt, photo));
   imgEl.src = photo.url;
   imgEl.alt = photo.description;
   commentsCountEl.textContent = photo.comments.length;
@@ -93,7 +93,7 @@ const renderPhotos = (photos) => {
  *
  * @param {FilterVariant[keyof FilterVariant]} filterVariant
  */
-const handleChangeFilter = (filterVariant) => {
+const filterChangeHandler = (filterVariant) => {
   const photos = filters[filterVariant](cachedPhotos);
   renderPhotos(photos);
 };
@@ -106,7 +106,7 @@ const handleChangeFilter = (filterVariant) => {
  */
 const fillDocumentWithPhotos = (photos) => {
   cachedPhotos = photos.slice();
-  initFilters(handleChangeFilter);
+  initFilters(filterChangeHandler);
   renderPhotos(cachedPhotos);
 };
 

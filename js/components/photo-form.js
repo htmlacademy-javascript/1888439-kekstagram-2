@@ -25,10 +25,10 @@ import { showUploadAlert } from './alert/upload-alert.js';
  * @property addValidator
  * @property destroy
  * @property validate
- * */
+ */
 
 
-/** @type {Pristine|null} */
+/** @type {Pristine | null} */
 let validator = null;
 /** @type {HTMLElement[]} */
 const filterPreviewElements = [];
@@ -85,12 +85,12 @@ const validateDescriptionLength = (rawCommentStr) => {
  * @param {number} state
  * @param {PhotoFilter[keyof PhotoFilter]} filter
  */
-const handleSliderUpdate = (state, filter) => {
+const sliderUpdateHandler = (state, filter) => {
   const photoPreviewElement = getElement('.img-upload__preview img');
   const effectLevelElement = getElement('.img-upload__effect-level .effect-level__value');
 
   effectLevelElement.value = parseFloat(state);
-  photoPreviewElement.style.filter = filter.Template(state);
+  photoPreviewElement.style.filter = filter.FillTemplate(state);
 };
 
 /**
@@ -98,7 +98,7 @@ const handleSliderUpdate = (state, filter) => {
  *
  * @param {InputEvent} evt
  */
-const handleChangeFilter = ({ target }) => {
+const filterChangeHandler = ({ target }) => {
   if (!(target instanceof HTMLInputElement && target.type === 'radio')) {
     return;
   }
@@ -133,7 +133,7 @@ const handleChangeFilter = ({ target }) => {
 
   sliderElement.noUiSlider.on(
     'update',
-    (state) => handleSliderUpdate(state, filter)
+    (state) => sliderUpdateHandler(state, filter)
   );
 };
 
@@ -142,7 +142,7 @@ const handleChangeFilter = ({ target }) => {
  *
  * @param {MouseEvent} evt
  */
-const handleScaleChange = ({ target, currentTarget }) => {
+const scaleChangeHandler = ({ target, currentTarget }) => {
   const buttonClasses = [
     'scale__control--smaller',
     'scale__control--bigger',
@@ -198,12 +198,12 @@ const openPhotoForm = () => {
   });
   validator.addValidator(descriptionInput, validateDescriptionLength, INVALID_PHOTO_DESCRIPTION_MESSAGE);
 
-  formFiltersElement.addEventListener('change', handleChangeFilter);
-  closeFormButton.addEventListener('click', handleCloseClick);
+  formFiltersElement.addEventListener('change', filterChangeHandler);
+  closeFormButton.addEventListener('click', closeButtonClickHandler);
   uploadFormElement.addEventListener('keydown', interceptEscInsideInput);
-  uploadFormElement.addEventListener('submit', handleFormSubmit);
-  scaleFieldElement.addEventListener('click', handleScaleChange);
-  window.addEventListener('keydown', handleEscKeydown);
+  uploadFormElement.addEventListener('submit', formSubmitHandler);
+  scaleFieldElement.addEventListener('click', scaleChangeHandler);
+  window.addEventListener('keydown', windowEscKeydownHandler);
 
   formOverlayElement.classList.remove(HIDE_ELEMENT_CLASS);
   document.body.classList.add(MODAL_OPEN_CLASS);
@@ -240,12 +240,12 @@ const closePhotoForm = () => {
     element.style.backgroundImage = '';
   });
 
-  formFiltersElement.removeEventListener('change', handleChangeFilter);
-  closeFormButton.removeEventListener('click', handleCloseClick);
+  formFiltersElement.removeEventListener('change', filterChangeHandler);
+  closeFormButton.removeEventListener('click', closeButtonClickHandler);
   uploadFormElement.removeEventListener('keydown', interceptEscInsideInput);
-  uploadFormElement.removeEventListener('submit', handleFormSubmit);
-  scaleFieldElement.removeEventListener('click', handleScaleChange);
-  window.removeEventListener('keydown', handleEscKeydown);
+  uploadFormElement.removeEventListener('submit', formSubmitHandler);
+  scaleFieldElement.removeEventListener('click', scaleChangeHandler);
+  window.removeEventListener('keydown', windowEscKeydownHandler);
 
   effectLevelFieldset.classList.add(HIDE_ELEMENT_CLASS);
   formOverlayElement.classList.add(HIDE_ELEMENT_CLASS);
@@ -257,7 +257,7 @@ const closePhotoForm = () => {
  *
  * @param {MouseEvent} evt
  */
-function handleCloseClick(evt) {
+function closeButtonClickHandler(evt) {
   evt.preventDefault();
   closePhotoForm();
 }
@@ -267,7 +267,7 @@ function handleCloseClick(evt) {
   *
   * @param {KeyboardEvent} evt
   */
-function handleEscKeydown(evt) {
+function windowEscKeydownHandler(evt) {
   if (evt.code === 'Escape') {
     closePhotoForm();
   }
@@ -278,7 +278,7 @@ function handleEscKeydown(evt) {
  *
  * @param {SubmitEvent} evt
  */
-async function handleFormSubmit(evt) {
+async function formSubmitHandler(evt) {
   evt.preventDefault();
 
   if (!validator.validate()) {
@@ -290,9 +290,9 @@ async function handleFormSubmit(evt) {
   const submitButton = getElement('#upload-submit', evt.target);
   submitButton.disabled = true;
 
-  window.removeEventListener('keydown', handleEscKeydown);
+  window.removeEventListener('keydown', windowEscKeydownHandler);
   const addWindowEscKeydownHandler = () => {
-    window.addEventListener('keydown', handleEscKeydown);
+    window.addEventListener('keydown', windowEscKeydownHandler);
     submitButton.disabled = false;
   };
 
@@ -313,7 +313,7 @@ async function handleFormSubmit(evt) {
  *
  * @param {InputEvent} evt
  */
-const handleUploadImgInput = (evt) => {
+const imgInputUploadHandler = (evt) => {
   evt.preventDefault();
 
   const file = evt.target.files[0];
@@ -327,4 +327,4 @@ const handleUploadImgInput = (evt) => {
   openPhotoForm();
 };
 
-export { closePhotoForm, handleUploadImgInput, openPhotoForm };
+export { closePhotoForm, imgInputUploadHandler, openPhotoForm };

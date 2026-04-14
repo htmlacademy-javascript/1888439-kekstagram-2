@@ -25,7 +25,7 @@ const setFilter = (filterVariant) => {
  *
  * @param {MouseEvent} evt
  */
-const handleClick = (evt) => {
+const filterClickHandler = (evt) => {
   evt.preventDefault();
   const targetClasses = evt.target.classList;
 
@@ -49,7 +49,7 @@ const initFilters = (changeAction) => {
   activeFilterElement = filtersForm.querySelector('.img-filters__button--active');
 
   filters.classList.remove('img-filters--inactive');
-  filtersForm.addEventListener('click', handleClick);
+  filtersForm.addEventListener('click', filterClickHandler);
 
   filterChangeHandler = debounce(changeAction, FILTER_CHANGE_DEBOUNCE_TIMEOUT);
 };
