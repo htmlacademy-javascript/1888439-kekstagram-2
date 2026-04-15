@@ -5,7 +5,7 @@ import {
   capitalize,
   createFragmentWith,
   getRandomInt,
-  interceptEscInsideInput,
+  inputEscKeydownInterceptHandler,
   isContainsSomeClass,
   keepNumberInRange,
   parseTime,
@@ -217,7 +217,7 @@ describe('should interceptEscInsideInput function intercept Escape keydown event
     const inputTextElement = screen.getByTestId(inputTestId);
     const textareaElement = screen.getByTestId(textareaTestId);
 
-    containerElement.addEventListener('keydown', interceptEscInsideInput);
+    containerElement.addEventListener('keydown', inputEscKeydownInterceptHandler);
 
     await user.click(inputTextElement);
     await user.keyboard('{Escape}');

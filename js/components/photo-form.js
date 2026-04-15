@@ -16,7 +16,7 @@ import {
   UploadAlertType
 } from '../constants.js';
 import { getElement } from '../element-cache.js';
-import { capitalize, interceptEscInsideInput, isContainsSomeClass, trimAndSplit } from '../utils.js';
+import { capitalize, inputEscKeydownInterceptHandler, isContainsSomeClass, trimAndSplit } from '../utils.js';
 import { showUploadAlert } from './alert/upload-alert.js';
 
 /**
@@ -200,7 +200,7 @@ const openPhotoForm = () => {
 
   formFiltersElement.addEventListener('change', filterChangeHandler);
   closeFormButton.addEventListener('click', closeButtonClickHandler);
-  uploadFormElement.addEventListener('keydown', interceptEscInsideInput);
+  uploadFormElement.addEventListener('keydown', inputEscKeydownInterceptHandler);
   uploadFormElement.addEventListener('submit', formSubmitHandler);
   scaleFieldElement.addEventListener('click', scaleChangeHandler);
   window.addEventListener('keydown', windowEscKeydownHandler);
@@ -242,7 +242,7 @@ const closePhotoForm = () => {
 
   formFiltersElement.removeEventListener('change', filterChangeHandler);
   closeFormButton.removeEventListener('click', closeButtonClickHandler);
-  uploadFormElement.removeEventListener('keydown', interceptEscInsideInput);
+  uploadFormElement.removeEventListener('keydown', inputEscKeydownInterceptHandler);
   uploadFormElement.removeEventListener('submit', formSubmitHandler);
   scaleFieldElement.removeEventListener('click', scaleChangeHandler);
   window.removeEventListener('keydown', windowEscKeydownHandler);

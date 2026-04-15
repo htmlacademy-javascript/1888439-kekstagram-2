@@ -131,7 +131,7 @@ export const capitalize = (str) => {
  *
  * @param {KeyboardEvent} evt
  */
-export const interceptEscInsideInput = (evt) => {
+export const inputEscKeydownInterceptHandler = (evt) => {
   if (evt.code !== 'Escape') {
     return;
   }
