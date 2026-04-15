@@ -1,6 +1,6 @@
 import { HIDE_ELEMENT_CLASS, MODAL_OPEN_CLASS } from '../constants.js';
 import { getElement } from '../element-cache.js';
-import { interceptEscInsideInput } from '../utils.js';
+import { inputEscKeydownInterceptHandler } from '../utils.js';
 import { fillSocial } from './social.js';
 
 /**
@@ -20,7 +20,7 @@ const openPhotoViewer = (photo) => {
 
   imgEl.src = photo.url;
   imgEl.alt = photo.description;
-  photoViewerEl.addEventListener('keydown', interceptEscInsideInput);
+  photoViewerEl.addEventListener('keydown', inputEscKeydownInterceptHandler);
   photoViewerEl.classList.remove(HIDE_ELEMENT_CLASS);
   closeBtn.addEventListener('click', closeButtonClickHandler);
 
@@ -36,7 +36,7 @@ const closePhotoViewer = () => {
   const closeBtn = getElement('.big-picture__cancel', photoViewerEl);
 
 
-  photoViewerEl.removeEventListener('keydown', interceptEscInsideInput);
+  photoViewerEl.removeEventListener('keydown', inputEscKeydownInterceptHandler);
   photoViewerEl.classList.add(HIDE_ELEMENT_CLASS);
   closeBtn.removeEventListener('click', closeButtonClickHandler);
 
